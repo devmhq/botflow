@@ -97,7 +97,9 @@
     ".bf-widget.bf-pos-left { left: 20px; }\n" +
     ".bf-launcher { display: inline-flex; align-items: center; gap: 8px; border: none; cursor: pointer; padding: 12px 18px; border-radius: 999px; background: var(--bf-color, #4F46E5); color: #fff; font-size: 14px; font-weight: 600; box-shadow: 0 8px 24px rgba(0,0,0,0.18); transition: transform 0.15s ease; }\n" +
     ".bf-launcher:hover { transform: translateY(-2px); }\n" +
-    ".bf-launcher svg { width: 20px; height: 20px; flex-shrink: 0; }\n" +
+    ".bf-launcher-icon { width: 20px; height: 20px; border-radius: 999px; overflow: hidden; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }\n" +
+    ".bf-launcher-icon svg { width: 20px; height: 20px; }\n" +
+    ".bf-launcher-icon img { width: 100%; height: 100%; object-fit: cover; }\n" +
     ".bf-launcher.bf-hidden { display: none; }\n" +
     ".bf-window { position: absolute; bottom: 0; width: 320px; height: 480px; max-height: 70vh; background: #fff; border-radius: 16px; box-shadow: 0 12px 40px rgba(0,0,0,0.22); display: flex; flex-direction: column; overflow: hidden; opacity: 0; transform: translateY(16px) scale(0.98); pointer-events: none; transition: opacity 0.18s ease, transform 0.18s ease; }\n" +
     ".bf-pos-right .bf-window { right: 0; }\n" +
@@ -112,8 +114,11 @@
     ".bf-close:hover { opacity: 1; }\n" +
     ".bf-body { flex: 1; display: flex; flex-direction: column; min-height: 0; background: #f8f8fb; }\n" +
     ".bf-messages { flex: 1; overflow-y: auto; padding: 14px; display: flex; flex-direction: column; gap: 8px; }\n" +
-    ".bf-msg { max-width: 82%; padding: 8px 12px; border-radius: 14px; font-size: 13.5px; line-height: 1.45; white-space: pre-wrap; word-wrap: break-word; }\n" +
+    ".bf-msg { max-width: 82%; padding: 8px 12px; border-radius: 14px; font-size: 13.5px; line-height: 1.45; }\n" +
+    ".bf-msg-text { white-space: pre-wrap; word-wrap: break-word; }\n" +
+    ".bf-msg-time { font-size: 10px; margin-top: 3px; opacity: 0.6; }\n" +
     ".bf-msg-user { align-self: flex-end; background: var(--bf-color, #4F46E5); color: #fff; border-bottom-right-radius: 3px; }\n" +
+    ".bf-msg-user .bf-msg-time { text-align: right; }\n" +
     ".bf-msg-assistant { align-self: flex-start; background: #eceef1; color: #1f2937; border-bottom-left-radius: 3px; }\n" +
     ".bf-typing { align-self: flex-start; display: none; gap: 4px; padding: 10px 14px; background: #eceef1; border-radius: 14px; border-bottom-left-radius: 3px; }\n" +
     ".bf-typing.bf-visible { display: inline-flex; }\n" +
@@ -153,7 +158,16 @@
   var launcherBtn = document.createElement("button");
   launcherBtn.className = "bf-launcher";
   launcherBtn.type = "button";
-  launcherBtn.innerHTML = CHAT_ICON + "<span>Chat with us</span>";
+
+  var launcherIconEl = document.createElement("span");
+  launcherIconEl.className = "bf-launcher-icon";
+  launcherIconEl.innerHTML = CHAT_ICON;
+
+  var launcherTextEl = document.createElement("span");
+  launcherTextEl.textContent = "Chat with us";
+
+  launcherBtn.appendChild(launcherIconEl);
+  launcherBtn.appendChild(launcherTextEl);
 
   var windowEl = document.createElement("div");
   windowEl.className = "bf-window";
@@ -298,7 +312,7 @@
       pushMessage("assistant", state.config.welcomeMessage || "Hi! How can I help you today?", false);
     } else {
       state.messages.forEach(function (m) {
-        renderBubble(m.role, m.content);
+        renderBubble(m.role, m.content, m.ts);
       });
     }
 
@@ -337,10 +351,30 @@
     if (messagesEl) messagesEl.scrollTop = messagesEl.scrollHeight;
   }
 
-  function renderBubble(role, content) {
+  function formatTime(ts) {
+    try {
+      return new Date(ts).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    } catch (e) {
+      return "";
+    }
+  }
+
+  function renderBubble(role, content, ts) {
     var bubble = document.createElement("div");
     bubble.className = "bf-msg " + (role === "user" ? "bf-msg-user" : "bf-msg-assistant");
-    bubble.textContent = content;
+
+    var textEl = document.createElement("div");
+    textEl.className = "bf-msg-text";
+    textEl.textContent = content;
+
+    var timeEl = document.createElement("div");
+    timeEl.className = "bf-msg-time";
+    timeEl.textContent = formatTime(ts || Date.now());
+
+    bubble.appendChild(textEl);
+    bubble.appendChild(timeEl);
+    bubble.bfTextEl = textEl;
+
     messagesEl.insertBefore(bubble, typingEl);
     scrollToBottom();
     return bubble;
@@ -349,7 +383,7 @@
   function pushMessage(role, content, persist) {
     state.messages.push({ role: role, content: content, ts: Date.now() });
     if (persist !== false) persistMessages();
-    if (messagesEl) renderBubble(role, content);
+    if (messagesEl) renderBubble(role, content, state.messages[state.messages.length - 1].ts);
   }
 
   function setTyping(visible) {
@@ -414,13 +448,13 @@
                   assistantBubble = renderBubble("assistant", "");
                 }
                 assistantText += payload.delta;
-                assistantBubble.textContent = assistantText;
+                assistantBubble.bfTextEl.textContent = assistantText;
                 scrollToBottom();
               } else if (payload.error) {
                 setTyping(false);
                 if (!assistantBubble) assistantBubble = renderBubble("assistant", "");
                 assistantText = assistantText || "Sorry, something went wrong. Please try again.";
-                assistantBubble.textContent = assistantText;
+                assistantBubble.bfTextEl.textContent = assistantText;
               }
             });
 
@@ -467,6 +501,12 @@
           img.src = config.avatarUrl;
           img.alt = "";
           avatarEl.appendChild(img);
+
+          launcherIconEl.innerHTML = "";
+          var launcherImg = document.createElement("img");
+          launcherImg.src = config.avatarUrl;
+          launcherImg.alt = "";
+          launcherIconEl.appendChild(launcherImg);
         }
 
         document.body.appendChild(host);
