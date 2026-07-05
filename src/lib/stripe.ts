@@ -18,3 +18,9 @@ export const PLAN_LIMITS: Record<Plan, PlanLimit> = {
   GROWTH: { chats: 2000, bots: 3, members: 5, price: "$49/mo", priceId: process.env.STRIPE_GROWTH_PRICE_ID },
   PRO: { chats: 10000, bots: 10, members: 20, price: "$149/mo", priceId: process.env.STRIPE_PRO_PRICE_ID },
 };
+
+export const PLAN_FEATURES: Record<Plan, string[]> = {
+  STARTER: ["500 chats/month", "1 chatbot", "Basic analytics", "Email support"],
+  GROWTH: ["2,000 chats/month", "3 chatbots", "Advanced analytics", "Priority support", "Custom domains"],
+  PRO: ["10,000 chats/month", "10 chatbots", "Full analytics", "Dedicated support", "Custom domains", "API access"],
+};

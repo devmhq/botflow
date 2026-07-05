@@ -1,18 +1,12 @@
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
-import { PLAN_LIMITS } from "@/lib/stripe";
+import { PLAN_LIMITS, PLAN_FEATURES } from "@/lib/stripe";
 import { DashboardHeader } from "@/components/dashboard/header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { ManageBillingButton, ManageBillingLink, UpgradeButton } from "@/components/dashboard/billing-actions";
 import { Check } from "lucide-react";
-
-const PLAN_FEATURES: Record<string, string[]> = {
-  STARTER: ["500 chats/month", "1 chatbot", "Basic analytics", "Email support"],
-  GROWTH: ["2,000 chats/month", "3 chatbots", "Advanced analytics", "Priority support", "Custom domains"],
-  PRO: ["10,000 chats/month", "10 chatbots", "Full analytics", "Dedicated support", "Custom domains", "API access"],
-};
 
 export default async function BillingPage() {
   const session = await auth();
