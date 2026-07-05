@@ -1,17 +1,12 @@
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
+import { PLAN_LIMITS } from "@/lib/stripe";
 import { DashboardHeader } from "@/components/dashboard/header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
-import { Check, ExternalLink } from "lucide-react";
-
-const PLAN_LIMITS: Record<string, { chats: number; bots: number; members: number; price: string }> = {
-  STARTER: { chats: 500, bots: 1, members: 1, price: "$0/mo" },
-  GROWTH: { chats: 2000, bots: 3, members: 5, price: "$49/mo" },
-  PRO: { chats: 10000, bots: 10, members: 20, price: "$149/mo" },
-};
+import { ManageBillingButton, ManageBillingLink, UpgradeButton } from "@/components/dashboard/billing-actions";
+import { Check } from "lucide-react";
 
 const PLAN_FEATURES: Record<string, string[]> = {
   STARTER: ["500 chats/month", "1 chatbot", "Basic analytics", "Email support"],
@@ -48,12 +43,7 @@ export default async function BillingPage() {
                 <p className="text-2xl font-bold">{tenant.plan}</p>
                 <p className="text-sm text-neutral-500">{limits.price}</p>
               </div>
-              {tenant.stripeSubscriptionId && (
-                <Button variant="outline" size="sm" className="gap-2">
-                  <ExternalLink className="h-3.5 w-3.5" />
-                  Manage billing
-                </Button>
-              )}
+              {tenant.stripeSubscriptionId && <ManageBillingButton />}
             </div>
             <Separator />
             <ul className="space-y-2">
@@ -113,9 +103,7 @@ export default async function BillingPage() {
                           </li>
                         ))}
                       </ul>
-                      <Button className="w-full" size="sm">
-                        Upgrade to {plan}
-                      </Button>
+                      <UpgradeButton plan={plan} />
                     </CardContent>
                   </Card>
                 ))}
@@ -133,8 +121,7 @@ export default async function BillingPage() {
               <p className="text-sm text-neutral-400">No billing history. You&apos;re on the free plan.</p>
             ) : (
               <p className="text-sm text-neutral-400">
-                View your full billing history in the{" "}
-                <button className="text-indigo-600 underline">Stripe portal</button>.
+                View your full billing history in the <ManageBillingLink />.
               </p>
             )}
           </CardContent>
