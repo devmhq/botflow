@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -29,6 +30,7 @@ export function PlanLimitsEditor() {
   function handleSave() {
     // In production, this would POST to an API endpoint / update env config
     setSaved(true);
+    toast.success("Plan limits saved");
     setTimeout(() => setSaved(false), 2000);
   }
 
@@ -40,7 +42,7 @@ export function PlanLimitsEditor() {
       <CardContent className="space-y-6">
         {(["STARTER", "GROWTH", "PRO"] as PlanKey[]).map((plan) => (
           <div key={plan}>
-            <p className="mb-3 text-sm font-semibold text-neutral-700">{plan}</p>
+            <p className="mb-3 text-sm font-semibold text-neutral-700 dark:text-neutral-300">{plan}</p>
             <div className="grid grid-cols-3 gap-4">
               <div className="space-y-1.5">
                 <Label className="text-xs">Monthly Chats</Label>

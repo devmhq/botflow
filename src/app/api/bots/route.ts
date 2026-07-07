@@ -8,13 +8,18 @@ export async function GET() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const bots = await prisma.chatbot.findMany({
-    where: { tenantId: session.user.tenantId },
-    orderBy: { createdAt: "desc" },
-    include: { _count: { select: { conversations: true, knowledgeItems: true } } },
-  });
+  try {
+    const bots = await prisma.chatbot.findMany({
+      where: { tenantId: session.user.tenantId },
+      orderBy: { createdAt: "desc" },
+      include: { _count: { select: { conversations: true, knowledgeItems: true } } },
+    });
 
-  return NextResponse.json(bots);
+    return NextResponse.json(bots);
+  } catch (err) {
+    console.error("GET /api/bots failed:", err);
+    return NextResponse.json({ error: "Failed to load chatbots" }, { status: 500 });
+  }
 }
 
 export async function POST(req: Request) {
@@ -23,26 +28,31 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const body = await req.json();
-  const { name, businessType, personality, widgetColor, widgetPosition, welcomeMessage, allowedDomains } = body;
+  try {
+    const body = await req.json();
+    const { name, businessType, personality, widgetColor, widgetPosition, welcomeMessage, allowedDomains } = body;
 
-  if (!name) {
-    return NextResponse.json({ error: "Name is required" }, { status: 400 });
+    if (!name) {
+      return NextResponse.json({ error: "Name is required" }, { status: 400 });
+    }
+
+    const bot = await prisma.chatbot.create({
+      data: {
+        name,
+        businessType: businessType ?? null,
+        personality: personality ?? null,
+        widgetColor: widgetColor ?? "#4F46E5",
+        widgetPosition: widgetPosition ?? "bottom-right",
+        welcomeMessage: welcomeMessage ?? "Hi! How can I help you today?",
+        allowedDomains: allowedDomains ?? [],
+        tenantId: session.user.tenantId,
+        status: "DRAFT",
+      },
+    });
+
+    return NextResponse.json(bot, { status: 201 });
+  } catch (err) {
+    console.error("POST /api/bots failed:", err);
+    return NextResponse.json({ error: "Failed to create chatbot" }, { status: 500 });
   }
-
-  const bot = await prisma.chatbot.create({
-    data: {
-      name,
-      businessType: businessType ?? null,
-      personality: personality ?? null,
-      widgetColor: widgetColor ?? "#4F46E5",
-      widgetPosition: widgetPosition ?? "bottom-right",
-      welcomeMessage: welcomeMessage ?? "Hi! How can I help you today?",
-      allowedDomains: allowedDomains ?? [],
-      tenantId: session.user.tenantId,
-      status: "DRAFT",
-    },
-  });
-
-  return NextResponse.json(bot, { status: 201 });
 }

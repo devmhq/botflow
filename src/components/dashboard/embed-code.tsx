@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -21,9 +22,13 @@ export function EmbedCode({ botId, botName }: EmbedCodeProps) {
 ></script>`;
 
   async function copy() {
-    await navigator.clipboard.writeText(scriptTag);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    try {
+      await navigator.clipboard.writeText(scriptTag);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      toast.error("Failed to copy — please copy the script manually.");
+    }
   }
 
   return (

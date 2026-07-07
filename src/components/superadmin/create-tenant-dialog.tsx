@@ -2,7 +2,10 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Controller, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -20,40 +23,41 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { createTenantSchema, type CreateTenantValues } from "@/lib/validations";
 
 export function CreateTenantDialog() {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
-  const [form, setForm] = useState({
-    name: "",
-    slug: "",
-    adminName: "",
-    adminEmail: "",
-    adminPassword: "",
-    plan: "STARTER",
+  const {
+    register,
+    control,
+    handleSubmit,
+    reset,
+    setValue,
+    formState: { errors },
+  } = useForm<CreateTenantValues>({
+    resolver: zodResolver(createTenantSchema),
+    defaultValues: { plan: "STARTER" },
   });
 
   function handleNameChange(value: string) {
-    setForm((prev) => ({
-      ...prev,
-      name: value,
-      slug: value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""),
-    }));
+    setValue("name", value);
+    setValue(
+      "slug",
+      value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")
+    );
   }
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
+  async function onSubmit(values: CreateTenantValues) {
     setLoading(true);
-    setError(null);
 
     try {
       const res = await fetch("/api/tenants", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify(values),
       });
 
       if (!res.ok) {
@@ -61,11 +65,12 @@ export function CreateTenantDialog() {
         throw new Error(data.error ?? "Failed to create tenant");
       }
 
+      toast.success("Tenant created");
       setOpen(false);
-      setForm({ name: "", slug: "", adminName: "", adminEmail: "", adminPassword: "", plan: "STARTER" });
+      reset({ plan: "STARTER" });
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred");
+      toast.error(err instanceof Error ? err.message : "An error occurred");
     } finally {
       setLoading(false);
     }
@@ -84,88 +89,87 @@ export function CreateTenantDialog() {
             <DialogTitle>Create New Tenant</DialogTitle>
           </DialogHeader>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
             <div className="space-y-2">
               <Label htmlFor="name">Company Name</Label>
               <Input
                 id="name"
-                value={form.name}
-                onChange={(e) => handleNameChange(e.target.value)}
                 placeholder="Acme Corp"
-                required
+                aria-invalid={!!errors.name}
+                {...register("name", { onChange: (e) => handleNameChange(e.target.value) })}
               />
+              {errors.name && <p className="text-xs text-red-600 dark:text-red-400">{errors.name.message}</p>}
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="slug">Slug</Label>
-              <Input
-                id="slug"
-                value={form.slug}
-                onChange={(e) => setForm((p) => ({ ...p, slug: e.target.value }))}
-                placeholder="acme-corp"
-                required
-              />
+              <Input id="slug" placeholder="acme-corp" aria-invalid={!!errors.slug} {...register("slug")} />
+              {errors.slug && <p className="text-xs text-red-600 dark:text-red-400">{errors.slug.message}</p>}
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="plan">Plan</Label>
-              <Select
-                value={form.plan}
-                onValueChange={(v) => { if (v) setForm((p) => ({ ...p, plan: v })); }}
-              >
-                <SelectTrigger id="plan">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="STARTER">Starter</SelectItem>
-                  <SelectItem value="GROWTH">Growth</SelectItem>
-                  <SelectItem value="PRO">Pro</SelectItem>
-                </SelectContent>
-              </Select>
+              <Controller
+                control={control}
+                name="plan"
+                render={({ field }) => (
+                  <Select value={field.value} onValueChange={(v) => { if (v) field.onChange(v); }}>
+                    <SelectTrigger id="plan">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="STARTER">Starter</SelectItem>
+                      <SelectItem value="GROWTH">Growth</SelectItem>
+                      <SelectItem value="PRO">Pro</SelectItem>
+                    </SelectContent>
+                  </Select>
+                )}
+              />
             </div>
 
             <div className="border-t pt-4">
-              <p className="mb-3 text-sm font-medium text-neutral-700">Admin Account</p>
+              <p className="mb-3 text-sm font-medium text-neutral-700 dark:text-neutral-300">Admin Account</p>
               <div className="space-y-3">
                 <div className="space-y-2">
                   <Label htmlFor="adminName">Name</Label>
                   <Input
                     id="adminName"
-                    value={form.adminName}
-                    onChange={(e) => setForm((p) => ({ ...p, adminName: e.target.value }))}
                     placeholder="John Doe"
-                    required
+                    aria-invalid={!!errors.adminName}
+                    {...register("adminName")}
                   />
+                  {errors.adminName && (
+                    <p className="text-xs text-red-600 dark:text-red-400">{errors.adminName.message}</p>
+                  )}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="adminEmail">Email</Label>
                   <Input
                     id="adminEmail"
                     type="email"
-                    value={form.adminEmail}
-                    onChange={(e) => setForm((p) => ({ ...p, adminEmail: e.target.value }))}
                     placeholder="john@acme.com"
-                    required
+                    aria-invalid={!!errors.adminEmail}
+                    {...register("adminEmail")}
                   />
+                  {errors.adminEmail && (
+                    <p className="text-xs text-red-600 dark:text-red-400">{errors.adminEmail.message}</p>
+                  )}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="adminPassword">Password</Label>
                   <Input
                     id="adminPassword"
                     type="password"
-                    value={form.adminPassword}
-                    onChange={(e) => setForm((p) => ({ ...p, adminPassword: e.target.value }))}
                     placeholder="Min. 8 characters"
-                    required
-                    minLength={8}
+                    aria-invalid={!!errors.adminPassword}
+                    {...register("adminPassword")}
                   />
+                  {errors.adminPassword && (
+                    <p className="text-xs text-red-600 dark:text-red-400">{errors.adminPassword.message}</p>
+                  )}
                 </div>
               </div>
             </div>
-
-            {error && (
-              <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-600">{error}</p>
-            )}
 
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => setOpen(false)}>

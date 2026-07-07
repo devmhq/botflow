@@ -49,7 +49,7 @@ export default async function TenantsPage() {
           <CreateTenantDialog />
         </div>
 
-        <div className="rounded-lg border border-neutral-200 bg-white">
+        <div className="rounded-lg border border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900">
           <Table>
             <TableHeader>
               <TableRow>
@@ -79,7 +79,7 @@ export default async function TenantsPage() {
                         {tenant.name[0].toUpperCase()}
                       </div>
                       <div>
-                        <p className="font-medium text-neutral-900">{tenant.name}</p>
+                        <p className="font-medium text-neutral-900 dark:text-white">{tenant.name}</p>
                         <p className="text-xs text-neutral-400">{tenant.slug}</p>
                       </div>
                     </div>

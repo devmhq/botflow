@@ -16,37 +16,42 @@ export async function GET(req: Request) {
     return Response.json({ error: "botId is required" }, { status: 400, headers });
   }
 
-  const bot = await prisma.chatbot.findUnique({
-    where: { id: botId },
-    select: {
-      id: true,
-      name: true,
-      status: true,
-      widgetColor: true,
-      widgetPosition: true,
-      welcomeMessage: true,
-      avatarUrl: true,
-      allowedDomains: true,
-    },
-  });
+  try {
+    const bot = await prisma.chatbot.findUnique({
+      where: { id: botId },
+      select: {
+        id: true,
+        name: true,
+        status: true,
+        widgetColor: true,
+        widgetPosition: true,
+        welcomeMessage: true,
+        avatarUrl: true,
+        allowedDomains: true,
+      },
+    });
 
-  if (!bot || bot.status !== "ACTIVE") {
-    return Response.json({ error: "Chatbot not found or inactive" }, { status: 404, headers });
+    if (!bot || bot.status !== "ACTIVE") {
+      return Response.json({ error: "Chatbot not found or inactive" }, { status: 404, headers });
+    }
+
+    if (!isOriginAllowed(origin, bot.allowedDomains)) {
+      return Response.json({ error: "Domain not allowed for this chatbot" }, { status: 403, headers });
+    }
+
+    return Response.json(
+      {
+        botId: bot.id,
+        name: bot.name,
+        widgetColor: bot.widgetColor,
+        widgetPosition: bot.widgetPosition,
+        welcomeMessage: bot.welcomeMessage,
+        avatarUrl: bot.avatarUrl,
+      },
+      { headers }
+    );
+  } catch (err) {
+    console.error("GET /api/widget-config failed:", err);
+    return Response.json({ error: "Failed to load widget config" }, { status: 500, headers });
   }
-
-  if (!isOriginAllowed(origin, bot.allowedDomains)) {
-    return Response.json({ error: "Domain not allowed for this chatbot" }, { status: 403, headers });
-  }
-
-  return Response.json(
-    {
-      botId: bot.id,
-      name: bot.name,
-      widgetColor: bot.widgetColor,
-      widgetPosition: bot.widgetPosition,
-      welcomeMessage: bot.welcomeMessage,
-      avatarUrl: bot.avatarUrl,
-    },
-    { headers }
-  );
 }

@@ -1,34 +1,38 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { signIn } from "next-auth/react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { registerSchema, type RegisterValues } from "@/lib/validations";
 
 export function RegisterForm() {
   const router = useRouter();
-
-  const [form, setForm] = useState({
-    name: "",
-    email: "",
-    password: "",
-    businessName: "",
-  });
+  const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<RegisterValues>({
+    resolver: zodResolver(registerSchema),
+    defaultValues: { email: searchParams.get("email") ?? "" },
+  });
+
+  async function onSubmit(values: RegisterValues) {
     setLoading(true);
-    setError(null);
 
     try {
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify(values),
       });
 
       if (!res.ok) {
@@ -37,8 +41,8 @@ export function RegisterForm() {
       }
 
       const result = await signIn("credentials", {
-        email: form.email,
-        password: form.password,
+        email: values.email,
+        password: values.password,
         redirect: false,
       });
 
@@ -46,36 +50,34 @@ export function RegisterForm() {
         throw new Error("Account created — please log in.");
       }
 
+      toast.success("Account created! Welcome to BotFlow.");
       router.push("/dashboard");
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred");
+      toast.error(err instanceof Error ? err.message : "An error occurred");
       setLoading(false);
     }
   }
 
   return (
-    <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+    <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-4" noValidate>
       <div className="space-y-2">
         <Label htmlFor="businessName">Business Name</Label>
         <Input
           id="businessName"
-          value={form.businessName}
-          onChange={(e) => setForm((p) => ({ ...p, businessName: e.target.value }))}
           placeholder="Acme Corp"
-          required
+          aria-invalid={!!errors.businessName}
+          {...register("businessName")}
         />
+        {errors.businessName && (
+          <p className="text-xs text-red-600 dark:text-red-400">{errors.businessName.message}</p>
+        )}
       </div>
 
       <div className="space-y-2">
         <Label htmlFor="name">Your Name</Label>
-        <Input
-          id="name"
-          value={form.name}
-          onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
-          placeholder="John Doe"
-          required
-        />
+        <Input id="name" placeholder="John Doe" aria-invalid={!!errors.name} {...register("name")} />
+        {errors.name && <p className="text-xs text-red-600 dark:text-red-400">{errors.name.message}</p>}
       </div>
 
       <div className="space-y-2">
@@ -84,11 +86,11 @@ export function RegisterForm() {
           id="email"
           type="email"
           autoComplete="email"
-          value={form.email}
-          onChange={(e) => setForm((p) => ({ ...p, email: e.target.value }))}
           placeholder="you@company.com"
-          required
+          aria-invalid={!!errors.email}
+          {...register("email")}
         />
+        {errors.email && <p className="text-xs text-red-600 dark:text-red-400">{errors.email.message}</p>}
       </div>
 
       <div className="space-y-2">
@@ -97,19 +99,12 @@ export function RegisterForm() {
           id="password"
           type="password"
           autoComplete="new-password"
-          value={form.password}
-          onChange={(e) => setForm((p) => ({ ...p, password: e.target.value }))}
           placeholder="Min. 8 characters"
-          required
-          minLength={8}
+          aria-invalid={!!errors.password}
+          {...register("password")}
         />
+        {errors.password && <p className="text-xs text-red-600 dark:text-red-400">{errors.password.message}</p>}
       </div>
-
-      {error && (
-        <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-600 dark:bg-red-950/40 dark:text-red-400">
-          {error}
-        </p>
-      )}
 
       <Button type="submit" disabled={loading} className="w-full bg-indigo-600 text-white hover:bg-indigo-700">
         {loading ? "Creating account…" : "Start free trial"}

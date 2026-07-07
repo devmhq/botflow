@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { ExternalLink } from "lucide-react";
 
@@ -19,27 +20,22 @@ async function redirectToUrl(endpoint: string, body?: Record<string, unknown>) {
 
 export function ManageBillingButton() {
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   async function handleClick() {
     setLoading(true);
-    setError(null);
     try {
       await redirectToUrl("/api/billing/portal");
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Something went wrong.");
+      toast.error(e instanceof Error ? e.message : "Something went wrong.");
       setLoading(false);
     }
   }
 
   return (
-    <div className="flex flex-col items-end gap-1">
-      <Button variant="outline" size="sm" className="gap-2" onClick={handleClick} disabled={loading}>
-        <ExternalLink className="h-3.5 w-3.5" />
-        {loading ? "Redirecting…" : "Manage billing"}
-      </Button>
-      {error && <p className="text-xs text-destructive">{error}</p>}
-    </div>
+    <Button variant="outline" size="sm" className="gap-2" onClick={handleClick} disabled={loading}>
+      <ExternalLink className="h-3.5 w-3.5" />
+      {loading ? "Redirecting…" : "Manage billing"}
+    </Button>
   );
 }
 
@@ -50,7 +46,8 @@ export function ManageBillingLink() {
     setLoading(true);
     try {
       await redirectToUrl("/api/billing/portal");
-    } catch {
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Something went wrong.");
       setLoading(false);
     }
   }
@@ -64,25 +61,20 @@ export function ManageBillingLink() {
 
 export function UpgradeButton({ plan }: { plan: "GROWTH" | "PRO" }) {
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   async function handleClick() {
     setLoading(true);
-    setError(null);
     try {
       await redirectToUrl("/api/billing/checkout", { plan });
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Something went wrong.");
+      toast.error(e instanceof Error ? e.message : "Something went wrong.");
       setLoading(false);
     }
   }
 
   return (
-    <div className="space-y-1">
-      <Button className="w-full" size="sm" onClick={handleClick} disabled={loading}>
-        {loading ? "Redirecting…" : `Upgrade to ${plan}`}
-      </Button>
-      {error && <p className="text-xs text-destructive">{error}</p>}
-    </div>
+    <Button className="w-full" size="sm" onClick={handleClick} disabled={loading}>
+      {loading ? "Redirecting…" : `Upgrade to ${plan}`}
+    </Button>
   );
 }

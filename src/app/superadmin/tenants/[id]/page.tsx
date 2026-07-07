@@ -105,7 +105,7 @@ export default async function TenantDetailPage({
             ) : (
               <div className="space-y-2">
                 {tenant.chatbots.map((bot) => (
-                  <div key={bot.id} className="flex items-center justify-between rounded-lg border border-neutral-100 px-4 py-3">
+                  <div key={bot.id} className="flex items-center justify-between rounded-lg border border-neutral-100 px-4 py-3 dark:border-neutral-800">
                     <div>
                       <p className="font-medium text-sm">{bot.name}</p>
                       <p className="text-xs text-neutral-400">{bot.businessType ?? "General"}</p>
@@ -131,12 +131,12 @@ export default async function TenantDetailPage({
             ) : (
               <div className="space-y-2">
                 {tenant.users.map((user) => (
-                  <div key={user.id} className="flex items-center justify-between rounded-lg border border-neutral-100 px-4 py-3">
+                  <div key={user.id} className="flex items-center justify-between rounded-lg border border-neutral-100 px-4 py-3 dark:border-neutral-800">
                     <div>
                       <p className="font-medium text-sm">{user.name}</p>
                       <p className="text-xs text-neutral-400">{user.email}</p>
                     </div>
-                    <span className="rounded-full bg-neutral-100 px-2 py-0.5 text-xs font-medium text-neutral-600">
+                    <span className="rounded-full bg-neutral-100 px-2 py-0.5 text-xs font-medium text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400">
                       {user.role}
                     </span>
                   </div>

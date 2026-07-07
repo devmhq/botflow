@@ -68,7 +68,7 @@ export default function SettingsPage() {
             <div className="space-y-2">
               <Label>Welcome Email Body</Label>
               <textarea
-                className="w-full rounded-md border border-neutral-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full rounded-md border border-neutral-200 bg-transparent px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:border-neutral-800 dark:text-neutral-100"
                 rows={5}
                 defaultValue={`Hi {{name}},
 

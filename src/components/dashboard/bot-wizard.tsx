@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,6 +17,7 @@ import {
 } from "@/components/ui/select";
 import { Check, ChevronRight, ChevronLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { botWizardStep1Schema } from "@/lib/validations";
 
 const STEPS = ["Basic Info", "Knowledge Base", "Appearance"];
 
@@ -48,7 +50,6 @@ export function BotWizard() {
   const router = useRouter();
   const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [form, setForm] = useState<FormData>({
     name: "",
     businessType: "",
@@ -64,8 +65,18 @@ export function BotWizard() {
   }
 
   async function handleSubmit() {
+    const parsed = botWizardStep1Schema.safeParse({
+      name: form.name,
+      businessType: form.businessType,
+      personality: form.personality,
+    });
+    if (!parsed.success) {
+      toast.error(parsed.error.issues[0]?.message ?? "Please check the required fields");
+      setStep(0);
+      return;
+    }
+
     setLoading(true);
-    setError(null);
     try {
       const res = await fetch("/api/bots", {
         method: "POST",
@@ -92,9 +103,10 @@ export function BotWizard() {
         });
       }
 
+      toast.success("Chatbot created");
       router.push(`/dashboard/bots/${bot.id}`);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong");
+      toast.error(err instanceof Error ? err.message : "Something went wrong");
       setLoading(false);
     }
   }
@@ -274,10 +286,6 @@ export function BotWizard() {
                 </div>
               </div>
             </>
-          )}
-
-          {error && (
-            <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-600">{error}</p>
           )}
         </CardContent>
       </Card>

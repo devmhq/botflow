@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import {
   Table,
   TableBody,
@@ -47,13 +48,21 @@ export function ConversationsTable({ conversations }: { conversations: Conversat
 
   async function resolve(id: string) {
     setLoading(true);
-    await fetch(`/api/conversations/${id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status: "RESOLVED" }),
-    });
-    setLoading(false);
-    router.refresh();
+    try {
+      const res = await fetch(`/api/conversations/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "RESOLVED" }),
+      });
+      if (!res.ok) throw new Error("Failed to update conversation");
+      toast.success("Conversation marked resolved");
+      setSelected((prev) => (prev && prev.id === id ? { ...prev, status: "RESOLVED" } : prev));
+      router.refresh();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "An error occurred");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (

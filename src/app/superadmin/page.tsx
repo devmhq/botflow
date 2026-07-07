@@ -114,7 +114,7 @@ export default async function SuperadminOverviewPage() {
                 <div className="flex items-start justify-between">
                   <div>
                     <p className="text-sm text-neutral-500">{kpi.title}</p>
-                    <p className="mt-1 text-3xl font-bold text-neutral-900">
+                    <p className="mt-1 text-3xl font-bold text-neutral-900 dark:text-white">
                       {kpi.value}
                     </p>
                     <p className="mt-1 text-xs text-neutral-400">{kpi.sub}</p>
@@ -145,7 +145,7 @@ export default async function SuperadminOverviewPage() {
                       {tenant.name[0].toUpperCase()}
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-neutral-900">{tenant.name}</p>
+                      <p className="text-sm font-medium text-neutral-900 dark:text-white">{tenant.name}</p>
                       <p className="text-xs text-neutral-400">
                         {tenant._count.chatbots} bot{tenant._count.chatbots !== 1 ? "s" : ""}
                       </p>
@@ -181,7 +181,7 @@ export default async function SuperadminOverviewPage() {
                     <Clock className="h-4 w-4 text-yellow-500 flex-shrink-0" />
                   )}
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-medium text-neutral-900">
+                    <p className="truncate text-sm font-medium text-neutral-900 dark:text-white">
                       {convo.tenant.name}
                     </p>
                     <p className="truncate text-xs text-neutral-400">

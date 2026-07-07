@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Suspense } from "react";
 import { Zap } from "lucide-react";
 import { RegisterForm } from "@/components/auth/register-form";
 
@@ -22,7 +23,9 @@ export default function RegisterPage() {
             No credit card required. Set up your chatbot in minutes.
           </p>
 
-          <RegisterForm />
+          <Suspense fallback={null}>
+            <RegisterForm />
+          </Suspense>
         </div>
 
         <p className="mt-6 text-center text-sm text-neutral-500 dark:text-neutral-400">

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -70,36 +71,60 @@ export function BotSettingsTabs({ bot }: { bot: Bot }) {
 
   async function save(payload: object, section: string) {
     setSaving(true);
-    await fetch(`/api/bots/${bot.id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-    setSaving(false);
-    setSaved(section);
-    setTimeout(() => setSaved(null), 2000);
-    router.refresh();
+    try {
+      const res = await fetch(`/api/bots/${bot.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error ?? "Failed to save changes");
+      }
+      setSaved(section);
+      setTimeout(() => setSaved(null), 2000);
+      toast.success("Changes saved");
+      router.refresh();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "An error occurred");
+    } finally {
+      setSaving(false);
+    }
   }
 
   async function addKnowledge() {
     if (!newKnowledge.trim()) return;
     setKLoading(true);
-    const res = await fetch("/api/knowledge", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ botId: bot.id, content: newKnowledge, sourceType: "text" }),
-    });
-    if (res.ok) {
+    try {
+      const res = await fetch("/api/knowledge", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ botId: bot.id, content: newKnowledge, sourceType: "text" }),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error ?? "Failed to add knowledge");
+      }
       const item = await res.json();
       setKnowledgeItems((prev) => [item, ...prev]);
       setNewKnowledge("");
+      toast.success("Knowledge added");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "An error occurred");
+    } finally {
+      setKLoading(false);
     }
-    setKLoading(false);
   }
 
   async function deleteKnowledge(id: string) {
-    await fetch(`/api/knowledge/${id}`, { method: "DELETE" });
-    setKnowledgeItems((prev) => prev.filter((k) => k.id !== id));
+    try {
+      const res = await fetch(`/api/knowledge/${id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error("Failed to delete knowledge item");
+      setKnowledgeItems((prev) => prev.filter((k) => k.id !== id));
+      toast.success("Knowledge item deleted");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "An error occurred");
+    }
   }
 
   function addDomain() {

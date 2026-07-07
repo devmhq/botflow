@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { Switch } from "@/components/ui/switch";
 
 interface BotStatusToggleProps {
@@ -16,13 +17,21 @@ export function BotStatusToggle({ botId, status }: BotStatusToggleProps) {
 
   async function toggle() {
     setLoading(true);
-    await fetch(`/api/bots/${botId}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status: isActive ? "INACTIVE" : "ACTIVE" }),
-    });
-    setLoading(false);
-    router.refresh();
+    try {
+      const nextStatus = isActive ? "INACTIVE" : "ACTIVE";
+      const res = await fetch(`/api/bots/${botId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: nextStatus }),
+      });
+      if (!res.ok) throw new Error("Failed to update chatbot status");
+      toast.success(nextStatus === "ACTIVE" ? "Chatbot activated" : "Chatbot deactivated");
+      router.refresh();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "An error occurred");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (

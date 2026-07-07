@@ -1,7 +1,9 @@
 import Anthropic from "@anthropic-ai/sdk";
 
+/** Anthropic client singleton used for chat completions. */
 export const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
+/** Model used for chat widget responses, overridable via env for cost/quality tuning. */
 export const CLAUDE_MODEL = process.env.CLAUDE_MODEL || "claude-opus-4-8";
 
 export interface ChatMessage {

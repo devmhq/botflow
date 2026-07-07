@@ -50,60 +50,69 @@ export async function POST(req: Request) {
     );
   }
 
-  let conversation = conversationId
-    ? await prisma.conversation.findFirst({ where: { id: conversationId, chatbotId: bot.id } })
-    : null;
+  let conversation: Awaited<ReturnType<typeof prisma.conversation.findFirst>>;
+  let messages: ChatMessage[];
+  let system: string;
 
-  if (!conversation) {
-    conversation = await prisma.conversation.create({
-      data: {
-        visitorId,
-        visitorName: visitorName ?? null,
-        visitorEmail: visitorEmail ?? null,
-        chatbotId: bot.id,
-        tenantId: bot.tenantId,
-      },
-    });
-  } else if (visitorName || visitorEmail) {
-    conversation = await prisma.conversation.update({
-      where: { id: conversation.id },
-      data: {
-        ...(visitorName && { visitorName }),
-        ...(visitorEmail && { visitorEmail }),
-      },
-    });
-  }
-
-  await prisma.message.create({
-    data: { role: "USER", content: message, conversationId: conversation.id },
-  });
-
-  const history = await prisma.message.findMany({
-    where: { conversationId: conversation.id },
-    orderBy: { createdAt: "asc" },
-    take: HISTORY_LIMIT,
-  });
-
-  const messages: ChatMessage[] = history.map((m) => ({
-    role: m.role === "USER" ? "user" : "assistant",
-    content: m.content,
-  }));
-
-  let knowledgeContext = "";
   try {
-    const chunks = await searchKnowledge(bot.id, message, 5);
-    if (chunks.length > 0) {
-      knowledgeContext = `\n\nRelevant knowledge base context:\n${chunks
-        .map((c) => `- ${c.content}`)
-        .join("\n")}`;
-    }
-  } catch {
-    // Knowledge search is best-effort — fall back to no context (e.g. embeddings not configured yet).
-  }
+    conversation = conversationId
+      ? await prisma.conversation.findFirst({ where: { id: conversationId, chatbotId: bot.id } })
+      : null;
 
-  const system = `${bot.personality ?? "You are a helpful, friendly assistant."}${
-    bot.businessType ? ` You work for a ${bot.businessType} business.` : ""
-  }${knowledgeContext}\n\nKeep responses concise and conversational, as this is a live chat widget.`;
+    if (!conversation) {
+      conversation = await prisma.conversation.create({
+        data: {
+          visitorId,
+          visitorName: visitorName ?? null,
+          visitorEmail: visitorEmail ?? null,
+          chatbotId: bot.id,
+          tenantId: bot.tenantId,
+        },
+      });
+    } else if (visitorName || visitorEmail) {
+      conversation = await prisma.conversation.update({
+        where: { id: conversation.id },
+        data: {
+          ...(visitorName && { visitorName }),
+          ...(visitorEmail && { visitorEmail }),
+        },
+      });
+    }
+
+    await prisma.message.create({
+      data: { role: "USER", content: message, conversationId: conversation.id },
+    });
+
+    const history = await prisma.message.findMany({
+      where: { conversationId: conversation.id },
+      orderBy: { createdAt: "asc" },
+      take: HISTORY_LIMIT,
+    });
+
+    messages = history.map((m) => ({
+      role: m.role === "USER" ? "user" : "assistant",
+      content: m.content,
+    }));
+
+    let knowledgeContext = "";
+    try {
+      const chunks = await searchKnowledge(bot.id, message, 5);
+      if (chunks.length > 0) {
+        knowledgeContext = `\n\nRelevant knowledge base context:\n${chunks
+          .map((c) => `- ${c.content}`)
+          .join("\n")}`;
+      }
+    } catch {
+      // Knowledge search is best-effort — fall back to no context (e.g. embeddings not configured yet).
+    }
+
+    system = `${bot.personality ?? "You are a helpful, friendly assistant."}${
+      bot.businessType ? ` You work for a ${bot.businessType} business.` : ""
+    }${knowledgeContext}\n\nKeep responses concise and conversational, as this is a live chat widget.`;
+  } catch (err) {
+    console.error("POST /api/chat failed before streaming:", err);
+    return Response.json({ error: "Failed to process message" }, { status: 500, headers });
+  }
 
   const claudeStream = streamChatCompletion({ system, messages });
 
@@ -129,7 +138,7 @@ export async function POST(req: Request) {
       "Content-Type": "text/event-stream",
       "Cache-Control": "no-cache, no-transform",
       Connection: "keep-alive",
-      "X-Conversation-Id": conversation.id,
+      "X-Conversation-Id": conversation!.id,
       "Access-Control-Expose-Headers": "X-Conversation-Id",
     },
   });

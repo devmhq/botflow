@@ -30,61 +30,66 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: `Webhook signature verification failed: ${message}` }, { status: 400 });
   }
 
-  switch (event.type) {
-    case "checkout.session.completed": {
-      const checkoutSession = event.data.object as Stripe.Checkout.Session;
-      const tenantId = checkoutSession.client_reference_id ?? checkoutSession.metadata?.tenantId;
-      if (!tenantId || !checkoutSession.customer || !checkoutSession.subscription) break;
+  try {
+    switch (event.type) {
+      case "checkout.session.completed": {
+        const checkoutSession = event.data.object as Stripe.Checkout.Session;
+        const tenantId = checkoutSession.client_reference_id ?? checkoutSession.metadata?.tenantId;
+        if (!tenantId || !checkoutSession.customer || !checkoutSession.subscription) break;
 
-      const subscription = await stripe.subscriptions.retrieve(checkoutSession.subscription as string);
-      const plan = planForPriceId(subscription.items.data[0]?.price.id);
+        const subscription = await stripe.subscriptions.retrieve(checkoutSession.subscription as string);
+        const plan = planForPriceId(subscription.items.data[0]?.price.id);
 
-      await prisma.tenant.update({
-        where: { id: tenantId },
-        data: {
-          stripeCustomerId: checkoutSession.customer as string,
-          stripeSubscriptionId: subscription.id,
-          ...(plan && { plan }),
-        },
-      });
-      break;
+        await prisma.tenant.update({
+          where: { id: tenantId },
+          data: {
+            stripeCustomerId: checkoutSession.customer as string,
+            stripeSubscriptionId: subscription.id,
+            ...(plan && { plan }),
+          },
+        });
+        break;
+      }
+
+      case "customer.subscription.updated": {
+        const subscription = event.data.object as Stripe.Subscription;
+        const plan = planForPriceId(subscription.items.data[0]?.price.id);
+        const tenant = await prisma.tenant.findFirst({
+          where: { stripeSubscriptionId: subscription.id },
+        });
+        if (!tenant) break;
+
+        await prisma.tenant.update({
+          where: { id: tenant.id },
+          data: {
+            ...(plan && { plan }),
+            status: subscription.status === "active" || subscription.status === "trialing" ? "ACTIVE" : "SUSPENDED",
+          },
+        });
+        break;
+      }
+
+      case "customer.subscription.deleted": {
+        const subscription = event.data.object as Stripe.Subscription;
+        const tenant = await prisma.tenant.findFirst({
+          where: { stripeSubscriptionId: subscription.id },
+        });
+        if (!tenant) break;
+
+        await prisma.tenant.update({
+          where: { id: tenant.id },
+          data: { plan: "STARTER", status: "CANCELLED", stripeSubscriptionId: null },
+        });
+        break;
+      }
+
+      default:
+        break;
     }
 
-    case "customer.subscription.updated": {
-      const subscription = event.data.object as Stripe.Subscription;
-      const plan = planForPriceId(subscription.items.data[0]?.price.id);
-      const tenant = await prisma.tenant.findFirst({
-        where: { stripeSubscriptionId: subscription.id },
-      });
-      if (!tenant) break;
-
-      await prisma.tenant.update({
-        where: { id: tenant.id },
-        data: {
-          ...(plan && { plan }),
-          status: subscription.status === "active" || subscription.status === "trialing" ? "ACTIVE" : "SUSPENDED",
-        },
-      });
-      break;
-    }
-
-    case "customer.subscription.deleted": {
-      const subscription = event.data.object as Stripe.Subscription;
-      const tenant = await prisma.tenant.findFirst({
-        where: { stripeSubscriptionId: subscription.id },
-      });
-      if (!tenant) break;
-
-      await prisma.tenant.update({
-        where: { id: tenant.id },
-        data: { plan: "STARTER", status: "CANCELLED", stripeSubscriptionId: null },
-      });
-      break;
-    }
-
-    default:
-      break;
+    return NextResponse.json({ received: true });
+  } catch (err) {
+    console.error(`Webhook handler failed for event ${event.type}:`, err);
+    return NextResponse.json({ error: "Webhook handler failed" }, { status: 500 });
   }
-
-  return NextResponse.json({ received: true });
 }

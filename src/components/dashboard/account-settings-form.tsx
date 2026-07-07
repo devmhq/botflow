@@ -1,12 +1,17 @@
 "use client";
 
 import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
+import { profileSchema, passwordChangeSchema } from "@/lib/validations";
+import { z } from "zod";
 
 interface User {
   id: string;
@@ -34,25 +39,63 @@ interface Props {
   tenant: Tenant | null;
 }
 
-export function AccountSettingsForm({ user, tenant }: Props) {
-  const [name, setName] = useState(user?.name ?? "");
-  const [businessName, setBusinessName] = useState(tenant?.name ?? "");
-  const [currentPassword, setCurrentPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [notifications, setNotifications] = useState(true);
-  const [saving, setSaving] = useState<string | null>(null);
-  const [saved, setSaved] = useState<string | null>(null);
+type ProfileValues = z.infer<typeof profileSchema>;
+type PasswordValues = z.infer<typeof passwordChangeSchema>;
 
-  async function saveSection(section: string, payload: object, endpoint: string) {
-    setSaving(section);
-    await fetch(endpoint, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-    setSaving(null);
-    setSaved(section);
-    setTimeout(() => setSaved(null), 2000);
+export function AccountSettingsForm({ user, tenant }: Props) {
+  const [notifications, setNotifications] = useState(true);
+  const [savingProfile, setSavingProfile] = useState(false);
+  const [savingPassword, setSavingPassword] = useState(false);
+
+  const profileForm = useForm<ProfileValues>({
+    resolver: zodResolver(profileSchema),
+    defaultValues: { name: user?.name ?? "", businessName: tenant?.name ?? "" },
+  });
+
+  const passwordForm = useForm<PasswordValues>({
+    resolver: zodResolver(passwordChangeSchema),
+    defaultValues: { currentPassword: "", newPassword: "" },
+  });
+
+  async function onSaveProfile(values: ProfileValues) {
+    setSavingProfile(true);
+    try {
+      const res = await fetch("/api/settings/profile", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(values),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error ?? "Failed to save business info");
+      }
+      toast.success("Business info saved");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "An error occurred");
+    } finally {
+      setSavingProfile(false);
+    }
+  }
+
+  async function onChangePassword(values: PasswordValues) {
+    setSavingPassword(true);
+    try {
+      const res = await fetch("/api/settings/password", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(values),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error ?? "Failed to update password");
+      }
+      toast.success("Password updated");
+      passwordForm.reset({ currentPassword: "", newPassword: "" });
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "An error occurred");
+    } finally {
+      setSavingPassword(false);
+    }
   }
 
   return (
@@ -60,47 +103,74 @@ export function AccountSettingsForm({ user, tenant }: Props) {
       {/* Business Info */}
       <Card>
         <CardHeader><CardTitle className="text-base">Business Info</CardTitle></CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label>Your Name</Label>
-            <Input value={name} onChange={(e) => setName(e.target.value)} />
-          </div>
-          <div className="space-y-2">
-            <Label>Company Name</Label>
-            <Input value={businessName} onChange={(e) => setBusinessName(e.target.value)} />
-          </div>
-          <div className="space-y-2">
-            <Label>Slug</Label>
-            <Input value={tenant?.slug ?? ""} readOnly className="text-neutral-400" />
-            <p className="text-xs text-neutral-400">Contact support to change your slug.</p>
-          </div>
-          <Button
-            onClick={() => saveSection("business", { name, businessName }, "/api/settings/profile")}
-            disabled={saving === "business"}
-          >
-            {saved === "business" ? "Saved!" : saving === "business" ? "Saving…" : "Save"}
-          </Button>
+        <CardContent>
+          <form onSubmit={profileForm.handleSubmit(onSaveProfile)} className="space-y-4" noValidate>
+            <div className="space-y-2">
+              <Label htmlFor="name">Your Name</Label>
+              <Input id="name" aria-invalid={!!profileForm.formState.errors.name} {...profileForm.register("name")} />
+              {profileForm.formState.errors.name && (
+                <p className="text-xs text-red-600 dark:text-red-400">{profileForm.formState.errors.name.message}</p>
+              )}
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="businessName">Company Name</Label>
+              <Input
+                id="businessName"
+                aria-invalid={!!profileForm.formState.errors.businessName}
+                {...profileForm.register("businessName")}
+              />
+              {profileForm.formState.errors.businessName && (
+                <p className="text-xs text-red-600 dark:text-red-400">{profileForm.formState.errors.businessName.message}</p>
+              )}
+            </div>
+            <div className="space-y-2">
+              <Label>Slug</Label>
+              <Input value={tenant?.slug ?? ""} readOnly className="text-neutral-400" />
+              <p className="text-xs text-neutral-400">Contact support to change your slug.</p>
+            </div>
+            <Button type="submit" disabled={savingProfile}>
+              {savingProfile ? "Saving…" : "Save"}
+            </Button>
+          </form>
         </CardContent>
       </Card>
 
       {/* Password Change */}
       <Card>
         <CardHeader><CardTitle className="text-base">Change Password</CardTitle></CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label>Current Password</Label>
-            <Input type="password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} />
-          </div>
-          <div className="space-y-2">
-            <Label>New Password</Label>
-            <Input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder="Min. 8 characters" />
-          </div>
-          <Button
-            onClick={() => saveSection("password", { currentPassword, newPassword }, "/api/settings/password")}
-            disabled={saving === "password" || !currentPassword || newPassword.length < 8}
-          >
-            {saved === "password" ? "Saved!" : saving === "password" ? "Saving…" : "Update Password"}
-          </Button>
+        <CardContent>
+          <form onSubmit={passwordForm.handleSubmit(onChangePassword)} className="space-y-4" noValidate>
+            <div className="space-y-2">
+              <Label htmlFor="currentPassword">Current Password</Label>
+              <Input
+                id="currentPassword"
+                type="password"
+                aria-invalid={!!passwordForm.formState.errors.currentPassword}
+                {...passwordForm.register("currentPassword")}
+              />
+              {passwordForm.formState.errors.currentPassword && (
+                <p className="text-xs text-red-600 dark:text-red-400">
+                  {passwordForm.formState.errors.currentPassword.message}
+                </p>
+              )}
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="newPassword">New Password</Label>
+              <Input
+                id="newPassword"
+                type="password"
+                placeholder="Min. 8 characters"
+                aria-invalid={!!passwordForm.formState.errors.newPassword}
+                {...passwordForm.register("newPassword")}
+              />
+              {passwordForm.formState.errors.newPassword && (
+                <p className="text-xs text-red-600 dark:text-red-400">{passwordForm.formState.errors.newPassword.message}</p>
+              )}
+            </div>
+            <Button type="submit" disabled={savingPassword}>
+              {savingPassword ? "Saving…" : "Update Password"}
+            </Button>
+          </form>
         </CardContent>
       </Card>
 

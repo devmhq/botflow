@@ -11,16 +11,21 @@ export async function PATCH(
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const body = await req.json();
+  try {
+    const body = await req.json();
 
-  const conversation = await prisma.conversation.updateMany({
-    where: { id: params.id, tenantId: session.user.tenantId },
-    data: {
-      ...(body.status && { status: body.status }),
-      ...(body.visitorName !== undefined && { visitorName: body.visitorName }),
-      ...(body.visitorEmail !== undefined && { visitorEmail: body.visitorEmail }),
-    },
-  });
+    const conversation = await prisma.conversation.updateMany({
+      where: { id: params.id, tenantId: session.user.tenantId },
+      data: {
+        ...(body.status && { status: body.status }),
+        ...(body.visitorName !== undefined && { visitorName: body.visitorName }),
+        ...(body.visitorEmail !== undefined && { visitorEmail: body.visitorEmail }),
+      },
+    });
 
-  return NextResponse.json(conversation);
+    return NextResponse.json(conversation);
+  } catch (err) {
+    console.error("PATCH /api/conversations/[id] failed:", err);
+    return NextResponse.json({ error: "Failed to update conversation" }, { status: 500 });
+  }
 }

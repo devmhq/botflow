@@ -15,10 +15,15 @@ export async function GET(
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const bot = await getBot(params.id, session.user.tenantId);
-  if (!bot) return NextResponse.json({ error: "Not found" }, { status: 404 });
+  try {
+    const bot = await getBot(params.id, session.user.tenantId);
+    if (!bot) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-  return NextResponse.json(bot);
+    return NextResponse.json(bot);
+  } catch (err) {
+    console.error("GET /api/bots/[id] failed:", err);
+    return NextResponse.json({ error: "Failed to load chatbot" }, { status: 500 });
+  }
 }
 
 export async function PATCH(
@@ -30,27 +35,32 @@ export async function PATCH(
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const existing = await getBot(params.id, session.user.tenantId);
-  if (!existing) return NextResponse.json({ error: "Not found" }, { status: 404 });
+  try {
+    const existing = await getBot(params.id, session.user.tenantId);
+    if (!existing) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-  const body = await req.json();
+    const body = await req.json();
 
-  const bot = await prisma.chatbot.update({
-    where: { id: params.id },
-    data: {
-      ...(body.name !== undefined && { name: body.name }),
-      ...(body.businessType !== undefined && { businessType: body.businessType }),
-      ...(body.personality !== undefined && { personality: body.personality }),
-      ...(body.widgetColor !== undefined && { widgetColor: body.widgetColor }),
-      ...(body.widgetPosition !== undefined && { widgetPosition: body.widgetPosition }),
-      ...(body.welcomeMessage !== undefined && { welcomeMessage: body.welcomeMessage }),
-      ...(body.allowedDomains !== undefined && { allowedDomains: body.allowedDomains }),
-      ...(body.status !== undefined && { status: body.status }),
-      ...(body.avatarUrl !== undefined && { avatarUrl: body.avatarUrl }),
-    },
-  });
+    const bot = await prisma.chatbot.update({
+      where: { id: params.id },
+      data: {
+        ...(body.name !== undefined && { name: body.name }),
+        ...(body.businessType !== undefined && { businessType: body.businessType }),
+        ...(body.personality !== undefined && { personality: body.personality }),
+        ...(body.widgetColor !== undefined && { widgetColor: body.widgetColor }),
+        ...(body.widgetPosition !== undefined && { widgetPosition: body.widgetPosition }),
+        ...(body.welcomeMessage !== undefined && { welcomeMessage: body.welcomeMessage }),
+        ...(body.allowedDomains !== undefined && { allowedDomains: body.allowedDomains }),
+        ...(body.status !== undefined && { status: body.status }),
+        ...(body.avatarUrl !== undefined && { avatarUrl: body.avatarUrl }),
+      },
+    });
 
-  return NextResponse.json(bot);
+    return NextResponse.json(bot);
+  } catch (err) {
+    console.error("PATCH /api/bots/[id] failed:", err);
+    return NextResponse.json({ error: "Failed to update chatbot" }, { status: 500 });
+  }
 }
 
 export async function DELETE(
@@ -62,9 +72,14 @@ export async function DELETE(
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const existing = await getBot(params.id, session.user.tenantId);
-  if (!existing) return NextResponse.json({ error: "Not found" }, { status: 404 });
+  try {
+    const existing = await getBot(params.id, session.user.tenantId);
+    if (!existing) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-  await prisma.chatbot.delete({ where: { id: params.id } });
-  return new NextResponse(null, { status: 204 });
+    await prisma.chatbot.delete({ where: { id: params.id } });
+    return new NextResponse(null, { status: 204 });
+  } catch (err) {
+    console.error("DELETE /api/bots/[id] failed:", err);
+    return NextResponse.json({ error: "Failed to delete chatbot" }, { status: 500 });
+  }
 }

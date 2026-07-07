@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -26,13 +27,20 @@ export function TenantPlanSelect({ tenantId, currentPlan }: { tenantId: string; 
   async function handleChange(plan: string | null) {
     if (!plan) return;
     setLoading(true);
-    await fetch(`/api/tenants/${tenantId}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ plan }),
-    });
-    setLoading(false);
-    router.refresh();
+    try {
+      const res = await fetch(`/api/tenants/${tenantId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ plan }),
+      });
+      if (!res.ok) throw new Error("Failed to update plan");
+      toast.success(`Plan changed to ${plan}`);
+      router.refresh();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "An error occurred");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -56,13 +64,20 @@ export function TenantStatusToggle({ tenantId, currentStatus }: { tenantId: stri
   async function toggle() {
     setLoading(true);
     const next = currentStatus === "ACTIVE" ? "SUSPENDED" : "ACTIVE";
-    await fetch(`/api/tenants/${tenantId}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status: next }),
-    });
-    setLoading(false);
-    router.refresh();
+    try {
+      const res = await fetch(`/api/tenants/${tenantId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: next }),
+      });
+      if (!res.ok) throw new Error("Failed to update tenant status");
+      toast.success(next === "ACTIVE" ? "Tenant reactivated" : "Tenant suspended");
+      router.refresh();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "An error occurred");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -84,10 +99,16 @@ export function DeleteTenantButton({ tenantId }: { tenantId: string }) {
 
   async function handleDelete() {
     setLoading(true);
-    await fetch(`/api/tenants/${tenantId}`, { method: "DELETE" });
-    setLoading(false);
-    setOpen(false);
-    router.push("/superadmin/tenants");
+    try {
+      const res = await fetch(`/api/tenants/${tenantId}`, { method: "DELETE" });
+      if (!res.ok) throw new Error("Failed to delete tenant");
+      toast.success("Tenant deleted");
+      setOpen(false);
+      router.push("/superadmin/tenants");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "An error occurred");
+      setLoading(false);
+    }
   }
 
   return (

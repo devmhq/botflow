@@ -153,7 +153,7 @@ export default async function AnalyticsPage() {
                       <span className={`font-medium ${planTextColors[plan]}`}>{plan}</span>
                       <span className="text-neutral-500">{count} ({pct}%)</span>
                     </div>
-                    <div className="h-2 overflow-hidden rounded-full bg-neutral-100">
+                    <div className="h-2 overflow-hidden rounded-full bg-neutral-100 dark:bg-neutral-800">
                       <div
                         className={`h-full rounded-full ${planColors[plan]} transition-all`}
                         style={{ width: `${pct}%` }}
@@ -164,7 +164,7 @@ export default async function AnalyticsPage() {
               })}
 
               <div className="mt-4 border-t pt-4">
-                <p className="mb-3 text-sm font-medium text-neutral-700">Chatbots by Status</p>
+                <p className="mb-3 text-sm font-medium text-neutral-700 dark:text-neutral-200">Chatbots by Status</p>
                 {["ACTIVE", "INACTIVE", "DRAFT"].map((status) => {
                   const count = statusMap[status] ?? 0;
                   const pct = totalChatbots > 0 ? Math.round((count / totalChatbots) * 100) : 0;
@@ -176,10 +176,10 @@ export default async function AnalyticsPage() {
                   return (
                     <div key={status} className="mb-2">
                       <div className="mb-1 flex justify-between text-xs">
-                        <span className="text-neutral-600">{status}</span>
+                        <span className="text-neutral-600 dark:text-neutral-400">{status}</span>
                         <span className="text-neutral-400">{count}</span>
                       </div>
-                      <div className="h-1.5 overflow-hidden rounded-full bg-neutral-100">
+                      <div className="h-1.5 overflow-hidden rounded-full bg-neutral-100 dark:bg-neutral-800">
                         <div
                           className={`h-full rounded-full ${colors[status]}`}
                           style={{ width: `${pct}%` }}

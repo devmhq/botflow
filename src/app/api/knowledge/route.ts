@@ -22,58 +22,63 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const body = await req.json();
-  const { botId, content, sourceType, fileData, sourceUrl } = body;
+  try {
+    const body = await req.json();
+    const { botId, content, sourceType, fileData, sourceUrl } = body;
 
-  if (!botId) {
-    return NextResponse.json({ error: "botId is required" }, { status: 400 });
-  }
-
-  // Verify the bot belongs to this tenant
-  const bot = await prisma.chatbot.findFirst({
-    where: { id: botId, tenantId: session.user.tenantId },
-  });
-  if (!bot) return NextResponse.json({ error: "Not found" }, { status: 404 });
-
-  let text = content as string | undefined;
-
-  if (sourceType === "pdf") {
-    if (!fileData) {
-      return NextResponse.json({ error: "fileData (base64) is required for PDF ingestion" }, { status: 400 });
+    if (!botId) {
+      return NextResponse.json({ error: "botId is required" }, { status: 400 });
     }
-    try {
-      text = await extractPdfText(fileData);
-    } catch {
-      return NextResponse.json({ error: "Failed to parse PDF" }, { status: 400 });
-    }
-  }
 
-  if (!text || !text.trim()) {
-    return NextResponse.json({ error: "content is required" }, { status: 400 });
-  }
-
-  const chunks = chunkText(text);
-  const items = [];
-
-  for (const chunk of chunks) {
-    const item = await prisma.knowledgeItem.create({
-      data: {
-        content: chunk,
-        sourceType: sourceType ?? "text",
-        sourceUrl: sourceUrl ?? null,
-        chatbotId: botId,
-      },
+    // Verify the bot belongs to this tenant
+    const bot = await prisma.chatbot.findFirst({
+      where: { id: botId, tenantId: session.user.tenantId },
     });
-    items.push(item);
+    if (!bot) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-    try {
-      const embedding = await generateEmbedding(chunk);
-      await storeEmbedding(item.id, embedding);
-    } catch {
-      // Embedding generation is best-effort — the chunk still exists for keyword-free
-      // ingestion even if the embedding provider is unavailable/misconfigured.
+    let text = content as string | undefined;
+
+    if (sourceType === "pdf") {
+      if (!fileData) {
+        return NextResponse.json({ error: "fileData (base64) is required for PDF ingestion" }, { status: 400 });
+      }
+      try {
+        text = await extractPdfText(fileData);
+      } catch {
+        return NextResponse.json({ error: "Failed to parse PDF" }, { status: 400 });
+      }
     }
-  }
 
-  return NextResponse.json({ count: items.length, items }, { status: 201 });
+    if (!text || !text.trim()) {
+      return NextResponse.json({ error: "content is required" }, { status: 400 });
+    }
+
+    const chunks = chunkText(text);
+    const items = [];
+
+    for (const chunk of chunks) {
+      const item = await prisma.knowledgeItem.create({
+        data: {
+          content: chunk,
+          sourceType: sourceType ?? "text",
+          sourceUrl: sourceUrl ?? null,
+          chatbotId: botId,
+        },
+      });
+      items.push(item);
+
+      try {
+        const embedding = await generateEmbedding(chunk);
+        await storeEmbedding(item.id, embedding);
+      } catch {
+        // Embedding generation is best-effort — the chunk still exists for keyword-free
+        // ingestion even if the embedding provider is unavailable/misconfigured.
+      }
+    }
+
+    return NextResponse.json({ count: items.length, items }, { status: 201 });
+  } catch (err) {
+    console.error("POST /api/knowledge failed:", err);
+    return NextResponse.json({ error: "Failed to ingest knowledge" }, { status: 500 });
+  }
 }

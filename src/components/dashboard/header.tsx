@@ -1,8 +1,7 @@
 "use client";
 
 import { signOut } from "next-auth/react";
-import { LogOut, Moon, Sun, Bell } from "lucide-react";
-import { useState, useEffect } from "react";
+import { LogOut, Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -12,6 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 interface DashboardHeaderProps {
   title: string;
@@ -19,23 +19,6 @@ interface DashboardHeaderProps {
 }
 
 export function DashboardHeader({ title, userName }: DashboardHeaderProps) {
-  const [dark, setDark] = useState(false);
-
-  useEffect(() => {
-    const saved = localStorage.getItem("theme");
-    if (saved === "dark") {
-      setDark(true);
-      document.documentElement.classList.add("dark");
-    }
-  }, []);
-
-  function toggleDark() {
-    const next = !dark;
-    setDark(next);
-    document.documentElement.classList.toggle("dark", next);
-    localStorage.setItem("theme", next ? "dark" : "light");
-  }
-
   const initials = userName
     ? userName.split(" ").map((w) => w[0]).join("").toUpperCase().slice(0, 2)
     : "U";
@@ -45,9 +28,7 @@ export function DashboardHeader({ title, userName }: DashboardHeaderProps) {
       <h1 className="text-xl font-semibold text-neutral-900 dark:text-white">{title}</h1>
 
       <div className="flex items-center gap-2">
-        <Button variant="ghost" size="icon" onClick={toggleDark}>
-          {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-        </Button>
+        <ThemeToggle />
 
         <Button variant="ghost" size="icon">
           <Bell className="h-4 w-4" />
