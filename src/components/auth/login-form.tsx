@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { signIn } from "next-auth/react";
+import { signIn, getSession } from "next-auth/react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,7 +14,7 @@ import { loginSchema, type LoginValues } from "@/lib/validations";
 export function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") ?? "/dashboard";
+  const explicitCallbackUrl = searchParams.get("callbackUrl");
   const [loading, setLoading] = useState(false);
 
   const {
@@ -39,7 +39,10 @@ export function LoginForm() {
     }
 
     toast.success("Welcome back!");
-    router.push(callbackUrl);
+    const session = await getSession();
+    const destination =
+      explicitCallbackUrl ?? (session?.user?.role === "SUPERADMIN" ? "/superadmin" : "/dashboard");
+    router.push(destination);
     router.refresh();
   }
 
