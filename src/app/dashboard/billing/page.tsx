@@ -35,15 +35,15 @@ export default async function BillingPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-2xl font-bold">{tenant.plan}</p>
-                <p className="text-sm text-neutral-500">{limits.price}</p>
+                <p className="text-sm text-muted-foreground">{limits.price}</p>
               </div>
               {tenant.stripeSubscriptionId && <ManageBillingButton />}
             </div>
             <Separator />
             <ul className="space-y-2">
               {PLAN_FEATURES[tenant.plan].map((f) => (
-                <li key={f} className="flex items-center gap-2 text-sm text-neutral-600 dark:text-neutral-400">
-                  <Check className="h-4 w-4 flex-shrink-0 text-green-500" />
+                <li key={f} className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Check className="h-4 w-4 flex-shrink-0 text-emerald-500" />
                   {f}
                 </li>
               ))}
@@ -58,17 +58,17 @@ export default async function BillingPage() {
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="flex justify-between text-sm">
-              <span className="text-neutral-600 dark:text-neutral-400">Chats used</span>
+              <span className="text-muted-foreground">Chats used</span>
               <span className="font-medium">
                 {tenant.monthlyChatsUsed} / {limits.chats}
               </span>
             </div>
             <Progress value={chatUsagePct} className="h-2" />
-            <p className="text-xs text-neutral-400">
+            <p className="text-xs text-muted-foreground">
               {chatUsagePct}% used · resets on the 1st of each month
             </p>
             {chatUsagePct >= 80 && (
-              <p className="rounded-md bg-yellow-50 px-3 py-2 text-sm text-yellow-700">
+              <p className="rounded-md bg-amber-500/10 px-3 py-2 text-sm text-amber-600 dark:text-amber-400">
                 You&apos;re approaching your chat limit. Consider upgrading.
               </p>
             )}
@@ -83,16 +83,16 @@ export default async function BillingPage() {
               {(["GROWTH", "PRO"] as const)
                 .filter((p) => p !== tenant.plan)
                 .map((plan) => (
-                  <Card key={plan} className={plan === "PRO" ? "border-indigo-200 ring-1 ring-indigo-200" : ""}>
+                  <Card key={plan} className={plan === "PRO" ? "border-primary/30 ring-1 ring-primary/30" : ""}>
                     <CardContent className="p-5 space-y-3">
                       <div>
                         <p className="font-bold text-lg">{plan}</p>
-                        <p className="text-sm text-neutral-500">{PLAN_LIMITS[plan].price}</p>
+                        <p className="text-sm text-muted-foreground">{PLAN_LIMITS[plan].price}</p>
                       </div>
                       <ul className="space-y-1.5">
                         {PLAN_FEATURES[plan].map((f) => (
-                          <li key={f} className="flex items-center gap-1.5 text-xs text-neutral-600 dark:text-neutral-400">
-                            <Check className="h-3.5 w-3.5 flex-shrink-0 text-green-500" />
+                          <li key={f} className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                            <Check className="h-3.5 w-3.5 flex-shrink-0 text-emerald-500" />
                             {f}
                           </li>
                         ))}
@@ -112,9 +112,9 @@ export default async function BillingPage() {
           </CardHeader>
           <CardContent>
             {!tenant.stripeSubscriptionId ? (
-              <p className="text-sm text-neutral-400">No billing history. You&apos;re on the free plan.</p>
+              <p className="text-sm text-muted-foreground">No billing history. You&apos;re on the free plan.</p>
             ) : (
-              <p className="text-sm text-neutral-400">
+              <p className="text-sm text-muted-foreground">
                 View your full billing history in the <ManageBillingLink />.
               </p>
             )}

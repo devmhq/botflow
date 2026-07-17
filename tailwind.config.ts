@@ -9,6 +9,11 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ["var(--font-sans)", "ui-sans-serif", "system-ui", "sans-serif"],
+        heading: ["var(--font-heading)", "ui-sans-serif", "system-ui", "sans-serif"],
+        mono: ["var(--font-mono)", "ui-monospace", "monospace"],
+      },
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
@@ -42,6 +47,13 @@ const config: Config = {
         border: "var(--border)",
         input: "var(--input)",
         ring: "var(--ring)",
+        "chart-1": "var(--chart-1)",
+        "chart-2": "var(--chart-2)",
+        "chart-3": "var(--chart-3)",
+        "chart-4": "var(--chart-4)",
+        "chart-5": "var(--chart-5)",
+        "gradient-from": "var(--gradient-from)",
+        "gradient-to": "var(--gradient-to)",
         sidebar: {
           DEFAULT: "var(--sidebar)",
           foreground: "var(--sidebar-foreground)",

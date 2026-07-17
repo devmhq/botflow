@@ -195,16 +195,16 @@ export function BotSettingsTabs({ bot }: { bot: Bot }) {
             <div className="space-y-2">
               <p className="text-sm font-medium">{knowledgeItems.length} item{knowledgeItems.length !== 1 ? "s" : ""}</p>
               {knowledgeItems.length === 0 && (
-                <p className="text-sm text-neutral-400">No knowledge items yet.</p>
+                <p className="text-sm text-muted-foreground">No knowledge items yet.</p>
               )}
               {knowledgeItems.map((item) => (
-                <div key={item.id} className="flex items-start gap-3 rounded-lg border border-neutral-100 p-3 dark:border-neutral-800">
-                  <p className="flex-1 text-sm text-neutral-700 dark:text-neutral-300 line-clamp-2">
+                <div key={item.id} className="flex items-start gap-3 rounded-lg border border-border p-3">
+                  <p className="flex-1 text-sm text-muted-foreground line-clamp-2">
                     {item.content}
                   </p>
                   <button
                     onClick={() => deleteKnowledge(item.id)}
-                    className="flex-shrink-0 text-neutral-400 hover:text-red-500 transition-colors"
+                    className="flex-shrink-0 text-muted-foreground hover:text-destructive transition-colors"
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>
@@ -230,7 +230,7 @@ export function BotSettingsTabs({ bot }: { bot: Bot }) {
                     onClick={() => setWidgetColor(color)}
                     className={cn(
                       "h-8 w-8 rounded-full ring-offset-2 transition-all",
-                      widgetColor === color ? "ring-2 ring-neutral-900 dark:ring-white" : ""
+                      widgetColor === color ? "ring-2 ring-foreground" : ""
                     )}
                     style={{ backgroundColor: color }}
                   />
@@ -257,15 +257,15 @@ export function BotSettingsTabs({ bot }: { bot: Bot }) {
             </div>
 
             {/* Preview */}
-            <div className="rounded-xl border border-neutral-200 p-4 dark:border-neutral-800">
-              <p className="mb-3 text-xs font-medium uppercase tracking-wide text-neutral-400">Preview</p>
+            <div className="rounded-xl border border-border p-4">
+              <p className="mb-3 text-xs font-medium uppercase tracking-wide text-muted-foreground">Preview</p>
               <div className="flex items-end gap-2">
                 <div className="rounded-full p-3 shadow-lg" style={{ backgroundColor: widgetColor }}>
                   <svg className="h-5 w-5 text-white" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                   </svg>
                 </div>
-                <div className="max-w-xs rounded-2xl rounded-bl-none bg-neutral-100 px-4 py-2 text-sm dark:bg-neutral-800">
+                <div className="max-w-xs rounded-2xl rounded-bl-none bg-muted px-4 py-2 text-sm">
                   {welcomeMessage}
                 </div>
               </div>
@@ -288,7 +288,7 @@ export function BotSettingsTabs({ bot }: { bot: Bot }) {
             <CardTitle className="text-base">Allowed Domains</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <p className="text-sm text-neutral-500">
+            <p className="text-sm text-muted-foreground">
               Restrict your widget to specific domains. Leave empty to allow all.
             </p>
 
@@ -303,14 +303,14 @@ export function BotSettingsTabs({ bot }: { bot: Bot }) {
             </div>
 
             {domains.length === 0 ? (
-              <p className="text-sm text-neutral-400">No domain restrictions.</p>
+              <p className="text-sm text-muted-foreground">No domain restrictions.</p>
             ) : (
               <div className="flex flex-wrap gap-2">
                 {domains.map((d) => (
-                  <span key={d} className="flex items-center gap-1.5 rounded-full border border-neutral-200 bg-neutral-50 px-3 py-1 text-sm dark:border-neutral-800 dark:bg-neutral-900">
+                  <span key={d} className="flex items-center gap-1.5 rounded-full border border-border bg-muted/40 px-3 py-1 text-sm">
                     {d}
                     <button onClick={() => setDomains((prev) => prev.filter((x) => x !== d))}>
-                      <X className="h-3 w-3 text-neutral-400 hover:text-red-500" />
+                      <X className="h-3 w-3 text-muted-foreground hover:text-destructive" />
                     </button>
                   </span>
                 ))}

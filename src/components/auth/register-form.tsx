@@ -70,14 +70,14 @@ export function RegisterForm() {
           {...register("businessName")}
         />
         {errors.businessName && (
-          <p className="text-xs text-red-600 dark:text-red-400">{errors.businessName.message}</p>
+          <p className="text-xs text-destructive">{errors.businessName.message}</p>
         )}
       </div>
 
       <div className="space-y-2">
         <Label htmlFor="name">Your Name</Label>
         <Input id="name" placeholder="John Doe" aria-invalid={!!errors.name} {...register("name")} />
-        {errors.name && <p className="text-xs text-red-600 dark:text-red-400">{errors.name.message}</p>}
+        {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
       </div>
 
       <div className="space-y-2">
@@ -90,7 +90,7 @@ export function RegisterForm() {
           aria-invalid={!!errors.email}
           {...register("email")}
         />
-        {errors.email && <p className="text-xs text-red-600 dark:text-red-400">{errors.email.message}</p>}
+        {errors.email && <p className="text-xs text-destructive">{errors.email.message}</p>}
       </div>
 
       <div className="space-y-2">
@@ -103,10 +103,10 @@ export function RegisterForm() {
           aria-invalid={!!errors.password}
           {...register("password")}
         />
-        {errors.password && <p className="text-xs text-red-600 dark:text-red-400">{errors.password.message}</p>}
+        {errors.password && <p className="text-xs text-destructive">{errors.password.message}</p>}
       </div>
 
-      <Button type="submit" disabled={loading} className="w-full bg-indigo-600 text-white hover:bg-indigo-700">
+      <Button type="submit" variant="gradient" disabled={loading} className="w-full">
         {loading ? "Creating account…" : "Start free trial"}
       </Button>
     </form>

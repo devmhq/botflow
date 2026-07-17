@@ -24,15 +24,15 @@ async function getTenants() {
 }
 
 const planStyles: Record<string, string> = {
-  STARTER: "bg-neutral-100 text-neutral-700",
-  GROWTH: "bg-blue-100 text-blue-700",
-  PRO: "bg-purple-100 text-purple-700",
+  STARTER: "bg-muted text-muted-foreground",
+  GROWTH: "bg-primary/10 text-primary",
+  PRO: "bg-fuchsia-500/10 text-fuchsia-600 dark:text-fuchsia-400",
 };
 
 const statusStyles: Record<string, string> = {
-  ACTIVE: "bg-green-100 text-green-700",
-  SUSPENDED: "bg-yellow-100 text-yellow-700",
-  CANCELLED: "bg-red-100 text-red-700",
+  ACTIVE: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
+  SUSPENDED: "bg-amber-500/10 text-amber-600 dark:text-amber-400",
+  CANCELLED: "bg-destructive/10 text-destructive",
 };
 
 export default async function TenantsPage() {
@@ -43,13 +43,13 @@ export default async function TenantsPage() {
       <SuperadminHeader title="Tenants" />
       <main className="p-6 space-y-4">
         <div className="flex items-center justify-between">
-          <p className="text-sm text-neutral-500">
+          <p className="text-sm text-muted-foreground">
             {tenants.length} tenant{tenants.length !== 1 ? "s" : ""} registered
           </p>
           <CreateTenantDialog />
         </div>
 
-        <div className="rounded-lg border border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900">
+        <div className="rounded-lg border border-border bg-card">
           <Table>
             <TableHeader>
               <TableRow>
@@ -66,7 +66,7 @@ export default async function TenantsPage() {
             <TableBody>
               {tenants.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={8} className="py-12 text-center text-sm text-neutral-400">
+                  <TableCell colSpan={8} className="py-12 text-center text-sm text-muted-foreground">
                     No tenants yet. Create your first one.
                   </TableCell>
                 </TableRow>
@@ -75,12 +75,12 @@ export default async function TenantsPage() {
                 <TableRow key={tenant.id} className="group">
                   <TableCell>
                     <div className="flex items-center gap-3">
-                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-indigo-100 text-xs font-bold text-indigo-700">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-fuchsia-500/10 text-xs font-bold text-fuchsia-600 dark:text-fuchsia-400">
                         {tenant.name[0].toUpperCase()}
                       </div>
                       <div>
-                        <p className="font-medium text-neutral-900 dark:text-white">{tenant.name}</p>
-                        <p className="text-xs text-neutral-400">{tenant.slug}</p>
+                        <p className="font-medium text-foreground">{tenant.name}</p>
+                        <p className="text-xs text-muted-foreground">{tenant.slug}</p>
                       </div>
                     </div>
                   </TableCell>
@@ -97,7 +97,7 @@ export default async function TenantsPage() {
                   <TableCell className="text-center text-sm">{tenant._count.chatbots}</TableCell>
                   <TableCell className="text-center text-sm">{tenant._count.users}</TableCell>
                   <TableCell className="text-center text-sm">{tenant._count.conversations}</TableCell>
-                  <TableCell className="text-sm text-neutral-500">
+                  <TableCell className="text-sm text-muted-foreground">
                     {new Date(tenant.createdAt).toLocaleDateString()}
                   </TableCell>
                   <TableCell>

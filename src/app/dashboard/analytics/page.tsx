@@ -81,16 +81,16 @@ export default async function DashboardAnalyticsPage() {
         {/* KPI row */}
         <div className="grid grid-cols-4 gap-4">
           {[
-            { label: "Total Conversations", value: totalConversations, icon: MessageSquare, color: "text-indigo-600", bg: "bg-indigo-50" },
-            { label: "Open", value: openConversations, icon: Clock, color: "text-yellow-600", bg: "bg-yellow-50" },
-            { label: "Resolved", value: resolvedConversations, icon: TrendingUp, color: "text-green-600", bg: "bg-green-50" },
-            { label: "Last 30 Days", value: recentConversations, icon: Bot, color: "text-blue-600", bg: "bg-blue-50" },
+            { label: "Total Conversations", value: totalConversations, icon: MessageSquare, color: "text-primary", bg: "bg-primary/10" },
+            { label: "Open", value: openConversations, icon: Clock, color: "text-amber-600 dark:text-amber-400", bg: "bg-amber-500/10" },
+            { label: "Resolved", value: resolvedConversations, icon: TrendingUp, color: "text-emerald-600 dark:text-emerald-400", bg: "bg-emerald-500/10" },
+            { label: "Last 30 Days", value: recentConversations, icon: Bot, color: "text-fuchsia-600 dark:text-fuchsia-400", bg: "bg-fuchsia-500/10" },
           ].map(({ label, value, icon: Icon, color, bg }) => (
             <Card key={label}>
               <CardContent className="p-6">
                 <div className="flex items-start justify-between">
                   <div>
-                    <p className="text-sm text-neutral-500">{label}</p>
+                    <p className="text-sm text-muted-foreground">{label}</p>
                     <p className="mt-1 text-3xl font-bold">{value}</p>
                   </div>
                   <div className={`rounded-lg p-2 ${bg}`}>
@@ -114,16 +114,16 @@ export default async function DashboardAnalyticsPage() {
                   <div key={date} className="group flex flex-1 flex-col items-center gap-1">
                     <div className="relative w-full">
                       <div
-                        className="w-full rounded-t bg-indigo-500 transition-all"
+                        className="w-full rounded-t bg-primary transition-all"
                         style={{ height: `${(count / maxDaily) * 160}px`, minHeight: count > 0 ? "4px" : "0" }}
                       />
                       {count > 0 && (
-                        <div className="absolute -top-7 left-1/2 hidden -translate-x-1/2 whitespace-nowrap rounded bg-neutral-800 px-1.5 py-0.5 text-xs text-white group-hover:block">
+                        <div className="absolute -top-7 left-1/2 hidden -translate-x-1/2 whitespace-nowrap rounded bg-foreground px-1.5 py-0.5 text-xs text-background group-hover:block">
                           {count}
                         </div>
                       )}
                     </div>
-                    <span className="rotate-45 origin-left text-[9px] text-neutral-400">{date}</span>
+                    <span className="rotate-45 origin-left text-[9px] text-muted-foreground">{date}</span>
                   </div>
                 ))}
               </div>
@@ -137,17 +137,17 @@ export default async function DashboardAnalyticsPage() {
             </CardHeader>
             <CardContent className="space-y-3">
               {bots.length === 0 && (
-                <p className="text-sm text-neutral-400">No bots yet.</p>
+                <p className="text-sm text-muted-foreground">No bots yet.</p>
               )}
               {bots.map((bot) => (
                 <div key={bot.id}>
                   <div className="mb-1 flex justify-between text-xs">
-                    <span className="truncate font-medium text-neutral-700 dark:text-neutral-300">{bot.name}</span>
-                    <span className="ml-2 text-neutral-400">{bot._count.conversations}</span>
+                    <span className="truncate font-medium text-foreground">{bot.name}</span>
+                    <span className="ml-2 text-muted-foreground">{bot._count.conversations}</span>
                   </div>
-                  <div className="h-2 overflow-hidden rounded-full bg-neutral-100 dark:bg-neutral-800">
+                  <div className="h-2 overflow-hidden rounded-full bg-muted">
                     <div
-                      className="h-full rounded-full bg-indigo-500"
+                      className="h-full rounded-full bg-primary"
                       style={{ width: `${(bot._count.conversations / maxBotConvos) * 100}%` }}
                     />
                   </div>

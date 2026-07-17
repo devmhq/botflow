@@ -42,7 +42,7 @@ export function PlanLimitsEditor() {
       <CardContent className="space-y-6">
         {(["STARTER", "GROWTH", "PRO"] as PlanKey[]).map((plan) => (
           <div key={plan}>
-            <p className="mb-3 text-sm font-semibold text-neutral-700 dark:text-neutral-300">{plan}</p>
+            <p className="mb-3 text-sm font-semibold text-foreground">{plan}</p>
             <div className="grid grid-cols-3 gap-4">
               <div className="space-y-1.5">
                 <Label className="text-xs">Monthly Chats</Label>

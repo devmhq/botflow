@@ -38,14 +38,14 @@ export function EmbedCode({ botId, botName }: EmbedCodeProps) {
           <CardTitle className="text-base">Embed {botName}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <p className="text-sm text-neutral-500">
+          <p className="text-sm text-muted-foreground">
             Copy the script below and paste it before the closing{" "}
-            <code className="rounded bg-neutral-100 px-1 py-0.5 text-xs dark:bg-neutral-800">&lt;/body&gt;</code>{" "}
+            <code className="rounded bg-muted px-1 py-0.5 text-xs">&lt;/body&gt;</code>{" "}
             tag of your website.
           </p>
 
-          <div className="relative rounded-lg border border-neutral-200 bg-neutral-50 p-4 dark:border-neutral-800 dark:bg-neutral-900">
-            <pre className="overflow-x-auto text-xs text-neutral-700 dark:text-neutral-300">
+          <div className="relative rounded-lg border border-border bg-muted/40 p-4">
+            <pre className="overflow-x-auto text-xs text-muted-foreground">
               {scriptTag}
             </pre>
             <Button
@@ -54,7 +54,7 @@ export function EmbedCode({ botId, botName }: EmbedCodeProps) {
               className="absolute right-2 top-2"
               onClick={copy}
             >
-              {copied ? <Check className="h-3.5 w-3.5 text-green-500" /> : <Copy className="h-3.5 w-3.5" />}
+              {copied ? <Check className="h-3.5 w-3.5 text-emerald-500" /> : <Copy className="h-3.5 w-3.5" />}
             </Button>
           </div>
 
@@ -71,7 +71,7 @@ export function EmbedCode({ botId, botName }: EmbedCodeProps) {
         <CardHeader>
           <CardTitle className="text-base">Install Instructions</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4 text-sm text-neutral-600 dark:text-neutral-400">
+        <CardContent className="space-y-4 text-sm text-muted-foreground">
           <ol className="list-decimal space-y-3 pl-5">
             <li>Copy the script tag above.</li>
             <li>
@@ -79,7 +79,7 @@ export function EmbedCode({ botId, botName }: EmbedCodeProps) {
             </li>
             <li>
               Paste the script just before the closing{" "}
-              <code className="rounded bg-neutral-100 px-1 py-0.5 text-xs dark:bg-neutral-800">&lt;/body&gt;</code>{" "}
+              <code className="rounded bg-muted px-1 py-0.5 text-xs">&lt;/body&gt;</code>{" "}
               tag on every page you want the chat widget to appear.
             </li>
             <li>Save and publish your changes.</li>
@@ -91,23 +91,23 @@ export function EmbedCode({ botId, botName }: EmbedCodeProps) {
           <Separator />
 
           <div>
-            <p className="font-medium text-neutral-700 dark:text-neutral-200">WordPress</p>
+            <p className="font-medium text-foreground">WordPress</p>
             <p className="mt-1">
               Use a plugin like <em>Insert Headers and Footers</em> and paste the script in the footer section.
             </p>
           </div>
 
           <div>
-            <p className="font-medium text-neutral-700 dark:text-neutral-200">Shopify</p>
+            <p className="font-medium text-foreground">Shopify</p>
             <p className="mt-1">
               Go to <em>Online Store → Themes → Edit Code</em> and paste the script in{" "}
-              <code className="rounded bg-neutral-100 px-1 py-0.5 text-xs dark:bg-neutral-800">theme.liquid</code>{" "}
-              before <code className="rounded bg-neutral-100 px-1 py-0.5 text-xs dark:bg-neutral-800">&lt;/body&gt;</code>.
+              <code className="rounded bg-muted px-1 py-0.5 text-xs">theme.liquid</code>{" "}
+              before <code className="rounded bg-muted px-1 py-0.5 text-xs">&lt;/body&gt;</code>.
             </p>
           </div>
 
           <div>
-            <p className="font-medium text-neutral-700 dark:text-neutral-200">Webflow</p>
+            <p className="font-medium text-foreground">Webflow</p>
             <p className="mt-1">
               Go to <em>Project Settings → Custom Code → Footer Code</em> and paste the script there.
             </p>

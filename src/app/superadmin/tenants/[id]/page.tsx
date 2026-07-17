@@ -24,15 +24,15 @@ async function getTenant(id: string) {
 }
 
 const planStyles: Record<string, string> = {
-  STARTER: "bg-neutral-100 text-neutral-700",
-  GROWTH: "bg-blue-100 text-blue-700",
-  PRO: "bg-purple-100 text-purple-700",
+  STARTER: "bg-muted text-muted-foreground",
+  GROWTH: "bg-primary/10 text-primary",
+  PRO: "bg-fuchsia-500/10 text-fuchsia-600 dark:text-fuchsia-400",
 };
 
 const chatbotStatusStyles: Record<string, string> = {
-  ACTIVE: "bg-green-100 text-green-700",
-  INACTIVE: "bg-neutral-100 text-neutral-500",
-  DRAFT: "bg-yellow-100 text-yellow-700",
+  ACTIVE: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
+  INACTIVE: "bg-muted text-muted-foreground",
+  DRAFT: "bg-amber-500/10 text-amber-600 dark:text-amber-400",
 };
 
 export default async function TenantDetailPage({
@@ -54,21 +54,21 @@ export default async function TenantDetailPage({
           </CardHeader>
           <CardContent className="grid grid-cols-2 gap-6 md:grid-cols-4">
             <div>
-              <p className="text-xs text-neutral-400 uppercase tracking-wide">Company</p>
+              <p className="text-xs text-muted-foreground uppercase tracking-wide">Company</p>
               <p className="mt-1 font-medium">{tenant.name}</p>
             </div>
             <div>
-              <p className="text-xs text-neutral-400 uppercase tracking-wide">Slug</p>
+              <p className="text-xs text-muted-foreground uppercase tracking-wide">Slug</p>
               <p className="mt-1 font-medium">{tenant.slug}</p>
             </div>
             <div>
-              <p className="text-xs text-neutral-400 uppercase tracking-wide">Plan</p>
+              <p className="text-xs text-muted-foreground uppercase tracking-wide">Plan</p>
               <span className={`mt-1 inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${planStyles[tenant.plan]}`}>
                 {tenant.plan}
               </span>
             </div>
             <div>
-              <p className="text-xs text-neutral-400 uppercase tracking-wide">Joined</p>
+              <p className="text-xs text-muted-foreground uppercase tracking-wide">Joined</p>
               <p className="mt-1 font-medium">{new Date(tenant.createdAt).toLocaleDateString()}</p>
             </div>
           </CardContent>
@@ -84,10 +84,10 @@ export default async function TenantDetailPage({
           ].map(({ icon: Icon, label, value }) => (
             <Card key={label}>
               <CardContent className="flex items-center gap-4 p-5">
-                <Icon className="h-8 w-8 text-neutral-300" />
+                <Icon className="h-8 w-8 text-muted-foreground/50" />
                 <div>
                   <p className="text-2xl font-bold">{value}</p>
-                  <p className="text-xs text-neutral-500">{label}</p>
+                  <p className="text-xs text-muted-foreground">{label}</p>
                 </div>
               </CardContent>
             </Card>
@@ -101,14 +101,14 @@ export default async function TenantDetailPage({
           </CardHeader>
           <CardContent>
             {tenant.chatbots.length === 0 ? (
-              <p className="text-sm text-neutral-400">No chatbots yet.</p>
+              <p className="text-sm text-muted-foreground">No chatbots yet.</p>
             ) : (
               <div className="space-y-2">
                 {tenant.chatbots.map((bot) => (
-                  <div key={bot.id} className="flex items-center justify-between rounded-lg border border-neutral-100 px-4 py-3 dark:border-neutral-800">
+                  <div key={bot.id} className="flex items-center justify-between rounded-lg border border-border px-4 py-3">
                     <div>
                       <p className="font-medium text-sm">{bot.name}</p>
-                      <p className="text-xs text-neutral-400">{bot.businessType ?? "General"}</p>
+                      <p className="text-xs text-muted-foreground">{bot.businessType ?? "General"}</p>
                     </div>
                     <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${chatbotStatusStyles[bot.status]}`}>
                       {bot.status}
@@ -127,16 +127,16 @@ export default async function TenantDetailPage({
           </CardHeader>
           <CardContent>
             {tenant.users.length === 0 ? (
-              <p className="text-sm text-neutral-400">No users.</p>
+              <p className="text-sm text-muted-foreground">No users.</p>
             ) : (
               <div className="space-y-2">
                 {tenant.users.map((user) => (
-                  <div key={user.id} className="flex items-center justify-between rounded-lg border border-neutral-100 px-4 py-3 dark:border-neutral-800">
+                  <div key={user.id} className="flex items-center justify-between rounded-lg border border-border px-4 py-3">
                     <div>
                       <p className="font-medium text-sm">{user.name}</p>
-                      <p className="text-xs text-neutral-400">{user.email}</p>
+                      <p className="text-xs text-muted-foreground">{user.email}</p>
                     </div>
-                    <span className="rounded-full bg-neutral-100 px-2 py-0.5 text-xs font-medium text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400">
+                    <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">
                       {user.role}
                     </span>
                   </div>
@@ -153,20 +153,20 @@ export default async function TenantDetailPage({
           </CardHeader>
           <CardContent className="flex items-center gap-4">
             <TenantPlanSelect tenantId={tenant.id} currentPlan={tenant.plan} />
-            <p className="text-sm text-neutral-500">Current: {tenant.plan}</p>
+            <p className="text-sm text-muted-foreground">Current: {tenant.plan}</p>
           </CardContent>
         </Card>
 
         {/* Danger zone */}
-        <Card className="border-red-200">
+        <Card className="border-destructive/30">
           <CardHeader>
-            <CardTitle className="text-base text-red-600">Danger Zone</CardTitle>
+            <CardTitle className="text-base text-destructive">Danger Zone</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium">Suspend / Reactivate</p>
-                <p className="text-xs text-neutral-400">
+                <p className="text-xs text-muted-foreground">
                   Suspended tenants cannot access the dashboard or use the widget.
                 </p>
               </div>
@@ -176,7 +176,7 @@ export default async function TenantDetailPage({
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium">Delete Tenant</p>
-                <p className="text-xs text-neutral-400">
+                <p className="text-xs text-muted-foreground">
                   Permanently remove this tenant and all their data.
                 </p>
               </div>

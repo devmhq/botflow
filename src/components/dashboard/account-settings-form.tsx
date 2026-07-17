@@ -109,7 +109,7 @@ export function AccountSettingsForm({ user, tenant }: Props) {
               <Label htmlFor="name">Your Name</Label>
               <Input id="name" aria-invalid={!!profileForm.formState.errors.name} {...profileForm.register("name")} />
               {profileForm.formState.errors.name && (
-                <p className="text-xs text-red-600 dark:text-red-400">{profileForm.formState.errors.name.message}</p>
+                <p className="text-xs text-destructive">{profileForm.formState.errors.name.message}</p>
               )}
             </div>
             <div className="space-y-2">
@@ -120,13 +120,13 @@ export function AccountSettingsForm({ user, tenant }: Props) {
                 {...profileForm.register("businessName")}
               />
               {profileForm.formState.errors.businessName && (
-                <p className="text-xs text-red-600 dark:text-red-400">{profileForm.formState.errors.businessName.message}</p>
+                <p className="text-xs text-destructive">{profileForm.formState.errors.businessName.message}</p>
               )}
             </div>
             <div className="space-y-2">
               <Label>Slug</Label>
-              <Input value={tenant?.slug ?? ""} readOnly className="text-neutral-400" />
-              <p className="text-xs text-neutral-400">Contact support to change your slug.</p>
+              <Input value={tenant?.slug ?? ""} readOnly className="text-muted-foreground" />
+              <p className="text-xs text-muted-foreground">Contact support to change your slug.</p>
             </div>
             <Button type="submit" disabled={savingProfile}>
               {savingProfile ? "Saving…" : "Save"}
@@ -149,7 +149,7 @@ export function AccountSettingsForm({ user, tenant }: Props) {
                 {...passwordForm.register("currentPassword")}
               />
               {passwordForm.formState.errors.currentPassword && (
-                <p className="text-xs text-red-600 dark:text-red-400">
+                <p className="text-xs text-destructive">
                   {passwordForm.formState.errors.currentPassword.message}
                 </p>
               )}
@@ -164,7 +164,7 @@ export function AccountSettingsForm({ user, tenant }: Props) {
                 {...passwordForm.register("newPassword")}
               />
               {passwordForm.formState.errors.newPassword && (
-                <p className="text-xs text-red-600 dark:text-red-400">{passwordForm.formState.errors.newPassword.message}</p>
+                <p className="text-xs text-destructive">{passwordForm.formState.errors.newPassword.message}</p>
               )}
             </div>
             <Button type="submit" disabled={savingPassword}>
@@ -179,18 +179,18 @@ export function AccountSettingsForm({ user, tenant }: Props) {
         <CardHeader><CardTitle className="text-base">Team Members</CardTitle></CardHeader>
         <CardContent className="space-y-3">
           {(tenant?.users ?? []).map((member) => (
-            <div key={member.id} className="flex items-center justify-between rounded-lg border border-neutral-100 px-4 py-3 dark:border-neutral-800">
+            <div key={member.id} className="flex items-center justify-between rounded-lg border border-border px-4 py-3">
               <div>
                 <p className="text-sm font-medium">{member.name}</p>
-                <p className="text-xs text-neutral-400">{member.email}</p>
+                <p className="text-xs text-muted-foreground">{member.email}</p>
               </div>
-              <span className="rounded-full bg-neutral-100 px-2 py-0.5 text-xs font-medium text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400">
+              <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">
                 {member.role}
               </span>
             </div>
           ))}
           {(tenant?.users ?? []).length === 0 && (
-            <p className="text-sm text-neutral-400">No team members yet.</p>
+            <p className="text-sm text-muted-foreground">No team members yet.</p>
           )}
         </CardContent>
       </Card>
@@ -202,7 +202,7 @@ export function AccountSettingsForm({ user, tenant }: Props) {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium">Email notifications</p>
-              <p className="text-xs text-neutral-400">Get notified about new conversations.</p>
+              <p className="text-xs text-muted-foreground">Get notified about new conversations.</p>
             </div>
             <Switch checked={notifications} onCheckedChange={setNotifications} />
           </div>
@@ -210,7 +210,7 @@ export function AccountSettingsForm({ user, tenant }: Props) {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium">Weekly digest</p>
-              <p className="text-xs text-neutral-400">Weekly summary of your chatbot activity.</p>
+              <p className="text-xs text-muted-foreground">Weekly summary of your chatbot activity.</p>
             </div>
             <Switch />
           </div>

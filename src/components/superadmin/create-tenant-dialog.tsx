@@ -98,13 +98,13 @@ export function CreateTenantDialog() {
                 aria-invalid={!!errors.name}
                 {...register("name", { onChange: (e) => handleNameChange(e.target.value) })}
               />
-              {errors.name && <p className="text-xs text-red-600 dark:text-red-400">{errors.name.message}</p>}
+              {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="slug">Slug</Label>
               <Input id="slug" placeholder="acme-corp" aria-invalid={!!errors.slug} {...register("slug")} />
-              {errors.slug && <p className="text-xs text-red-600 dark:text-red-400">{errors.slug.message}</p>}
+              {errors.slug && <p className="text-xs text-destructive">{errors.slug.message}</p>}
             </div>
 
             <div className="space-y-2">
@@ -127,8 +127,8 @@ export function CreateTenantDialog() {
               />
             </div>
 
-            <div className="border-t pt-4">
-              <p className="mb-3 text-sm font-medium text-neutral-700 dark:text-neutral-300">Admin Account</p>
+            <div className="border-t border-border pt-4">
+              <p className="mb-3 text-sm font-medium text-foreground">Admin Account</p>
               <div className="space-y-3">
                 <div className="space-y-2">
                   <Label htmlFor="adminName">Name</Label>
@@ -139,7 +139,7 @@ export function CreateTenantDialog() {
                     {...register("adminName")}
                   />
                   {errors.adminName && (
-                    <p className="text-xs text-red-600 dark:text-red-400">{errors.adminName.message}</p>
+                    <p className="text-xs text-destructive">{errors.adminName.message}</p>
                   )}
                 </div>
                 <div className="space-y-2">
@@ -152,7 +152,7 @@ export function CreateTenantDialog() {
                     {...register("adminEmail")}
                   />
                   {errors.adminEmail && (
-                    <p className="text-xs text-red-600 dark:text-red-400">{errors.adminEmail.message}</p>
+                    <p className="text-xs text-destructive">{errors.adminEmail.message}</p>
                   )}
                 </div>
                 <div className="space-y-2">
@@ -165,7 +165,7 @@ export function CreateTenantDialog() {
                     {...register("adminPassword")}
                   />
                   {errors.adminPassword && (
-                    <p className="text-xs text-red-600 dark:text-red-400">{errors.adminPassword.message}</p>
+                    <p className="text-xs text-destructive">{errors.adminPassword.message}</p>
                   )}
                 </div>
               </div>

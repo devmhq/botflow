@@ -68,19 +68,19 @@ const INDUSTRIES = [
 
 export function Industries() {
   return (
-    <section className="bg-white py-24 dark:bg-neutral-950">
+    <section className="bg-background py-24">
       <div className="mx-auto max-w-6xl px-6">
         <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-3xl font-bold tracking-tight text-neutral-900 sm:text-4xl dark:text-white">
+          <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
             Built for your industry
           </h2>
-          <p className="mt-4 text-lg text-neutral-600 dark:text-neutral-400">
+          <p className="mt-4 text-lg text-muted-foreground">
             BotFlow adapts to how your customers actually ask questions.
           </p>
         </div>
 
         <Tabs defaultValue="salon" className="mt-12">
-          <TabsList className="mx-auto flex h-auto w-fit flex-wrap justify-center gap-1 bg-neutral-100 p-1.5 dark:bg-neutral-900">
+          <TabsList className="mx-auto flex h-auto w-fit flex-wrap justify-center gap-1 bg-muted p-1.5">
             {INDUSTRIES.map(({ key, label, icon: Icon }) => (
               <TabsTrigger key={key} value={key} className="gap-1.5 px-3.5 py-2">
                 <Icon className="h-4 w-4" />
@@ -93,23 +93,23 @@ export function Industries() {
             <TabsContent key={key} value={key} className="mt-10">
               <div className="grid gap-10 md:grid-cols-2 md:items-center">
                 <div>
-                  <h3 className="text-2xl font-semibold text-neutral-900 dark:text-white">{title}</h3>
-                  <p className="mt-3 text-neutral-600 dark:text-neutral-400">{description}</p>
+                  <h3 className="text-2xl font-semibold text-foreground">{title}</h3>
+                  <p className="mt-3 text-muted-foreground">{description}</p>
                   <ul className="mt-6 space-y-3">
                     {useCases.map((useCase) => (
-                      <li key={useCase} className="flex items-start gap-2.5 text-sm text-neutral-700 dark:text-neutral-300">
-                        <Check className="mt-0.5 h-4 w-4 flex-shrink-0 text-indigo-600" />
+                      <li key={useCase} className="flex items-start gap-2.5 text-sm text-foreground/80">
+                        <Check className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary" />
                         {useCase}
                       </li>
                     ))}
                   </ul>
                 </div>
 
-                <div className="rounded-2xl border border-neutral-200 bg-neutral-50 p-5 dark:border-neutral-800 dark:bg-neutral-900">
-                  <div className="ml-auto max-w-[85%] rounded-2xl rounded-br-sm bg-indigo-600 px-4 py-2.5 text-sm text-white">
+                <div className="rounded-2xl border border-border bg-muted/40 p-5">
+                  <div className="ml-auto max-w-[85%] rounded-2xl rounded-br-sm bg-gradient-brand px-4 py-2.5 text-sm text-white">
                     {sample.q}
                   </div>
-                  <div className="mt-3 max-w-[85%] rounded-2xl rounded-bl-sm bg-white px-4 py-2.5 text-sm text-neutral-800 shadow-sm dark:bg-neutral-800 dark:text-neutral-100">
+                  <div className="mt-3 max-w-[85%] rounded-2xl rounded-bl-sm bg-card px-4 py-2.5 text-sm text-card-foreground shadow-sm">
                     {sample.a}
                   </div>
                 </div>

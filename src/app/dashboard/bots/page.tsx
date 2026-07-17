@@ -17,9 +17,9 @@ async function getBots(tenantId: string) {
 }
 
 const statusBadge: Record<string, string> = {
-  ACTIVE: "bg-green-100 text-green-700",
-  INACTIVE: "bg-neutral-100 text-neutral-500",
-  DRAFT: "bg-yellow-100 text-yellow-700",
+  ACTIVE: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
+  INACTIVE: "bg-muted text-muted-foreground",
+  DRAFT: "bg-amber-500/10 text-amber-600 dark:text-amber-400",
 };
 
 export default async function BotsPage() {
@@ -34,7 +34,7 @@ export default async function BotsPage() {
       <DashboardHeader title="Chatbots" userName={session.user?.name ?? undefined} />
       <main className="p-6 space-y-4">
         <div className="flex items-center justify-between">
-          <p className="text-sm text-neutral-500">
+          <p className="text-sm text-muted-foreground">
             {bots.length} bot{bots.length !== 1 ? "s" : ""}
           </p>
           <Link href="/dashboard/bots/new" className={buttonVariants()}>
@@ -46,11 +46,11 @@ export default async function BotsPage() {
         {bots.length === 0 && (
           <Card>
             <CardContent className="flex flex-col items-center justify-center py-16 text-center">
-              <div className="mb-4 rounded-full bg-indigo-50 p-4">
-                <Plus className="h-8 w-8 text-indigo-500" />
+              <div className="mb-4 rounded-full bg-primary/10 p-4">
+                <Plus className="h-8 w-8 text-primary" />
               </div>
               <h3 className="text-lg font-semibold">No chatbots yet</h3>
-              <p className="mt-1 text-sm text-neutral-500">
+              <p className="mt-1 text-sm text-muted-foreground">
                 Create your first chatbot to start engaging visitors.
               </p>
               <Link href="/dashboard/bots/new" className={cn(buttonVariants(), "mt-4")}>
@@ -71,8 +71,8 @@ export default async function BotsPage() {
                       style={{ backgroundColor: bot.widgetColor }}
                     />
                     <div>
-                      <p className="font-semibold text-neutral-900 dark:text-white">{bot.name}</p>
-                      <p className="text-xs text-neutral-400">{bot.businessType ?? "General"}</p>
+                      <p className="font-semibold text-foreground">{bot.name}</p>
+                      <p className="text-xs text-muted-foreground">{bot.businessType ?? "General"}</p>
                     </div>
                   </div>
                   <BotStatusToggle botId={bot.id} status={bot.status} />
@@ -82,7 +82,7 @@ export default async function BotsPage() {
                   <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${statusBadge[bot.status]}`}>
                     {bot.status}
                   </span>
-                  <span className="flex items-center gap-1 text-xs text-neutral-400">
+                  <span className="flex items-center gap-1 text-xs text-muted-foreground">
                     <MessageSquare className="h-3 w-3" />
                     {bot._count.conversations} conversations
                   </span>

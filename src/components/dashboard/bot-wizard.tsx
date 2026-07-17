@@ -124,22 +124,22 @@ export function BotWizard() {
           <div key={i} className="flex items-center gap-2">
             <div className={cn(
               "flex h-8 w-8 items-center justify-center rounded-full text-sm font-medium transition-colors",
-              i < step ? "bg-indigo-600 text-white" :
-              i === step ? "border-2 border-indigo-600 text-indigo-600" :
-              "border-2 border-neutral-200 text-neutral-400"
+              i < step ? "bg-primary text-primary-foreground" :
+              i === step ? "border-2 border-primary text-primary" :
+              "border-2 border-border text-muted-foreground"
             )}>
               {i < step ? <Check className="h-4 w-4" /> : i + 1}
             </div>
             <span className={cn(
               "text-sm font-medium",
-              i === step ? "text-neutral-900 dark:text-white" : "text-neutral-400"
+              i === step ? "text-foreground" : "text-muted-foreground"
             )}>
               {label}
             </span>
             {i < STEPS.length - 1 && (
               <div className={cn(
                 "mx-2 h-px w-12 flex-shrink-0",
-                i < step ? "bg-indigo-600" : "bg-neutral-200"
+                i < step ? "bg-primary" : "bg-border"
               )} />
             )}
           </div>
@@ -155,7 +155,7 @@ export function BotWizard() {
           {step === 0 && (
             <>
               <div className="space-y-2">
-                <Label htmlFor="name">Bot Name <span className="text-red-500">*</span></Label>
+                <Label htmlFor="name">Bot Name <span className="text-destructive">*</span></Label>
                 <Input
                   id="name"
                   value={form.name}
@@ -190,7 +190,7 @@ export function BotWizard() {
                   rows={4}
                   placeholder="Describe how the bot should behave…"
                 />
-                <p className="text-xs text-neutral-400">
+                <p className="text-xs text-muted-foreground">
                   This becomes the system prompt for every conversation.
                 </p>
               </div>
@@ -200,7 +200,7 @@ export function BotWizard() {
           {/* Step 2: Knowledge Base */}
           {step === 1 && (
             <>
-              <p className="text-sm text-neutral-500">
+              <p className="text-sm text-muted-foreground">
                 Paste your FAQs, product info, or any text your bot should know. You can also add more later.
               </p>
               <div className="space-y-2">
@@ -212,7 +212,7 @@ export function BotWizard() {
                   rows={10}
                   placeholder="Q: What are your opening hours?&#10;A: We're open Mon–Fri 9am–6pm.&#10;&#10;Q: Do you offer free consultations?&#10;A: Yes, book one at our website."
                 />
-                <p className="text-xs text-neutral-400">
+                <p className="text-xs text-muted-foreground">
                   Optional — you can skip and add knowledge later from bot settings.
                 </p>
               </div>
@@ -232,7 +232,7 @@ export function BotWizard() {
                       onClick={() => update("widgetColor", color)}
                       className={cn(
                         "h-8 w-8 rounded-full ring-offset-2 transition-all",
-                        form.widgetColor === color ? "ring-2 ring-neutral-900 dark:ring-white" : ""
+                        form.widgetColor === color ? "ring-2 ring-foreground" : ""
                       )}
                       style={{ backgroundColor: color }}
                       aria-label={color}
@@ -269,8 +269,8 @@ export function BotWizard() {
               </div>
 
               {/* Live preview */}
-              <div className="mt-4 rounded-xl border border-neutral-200 p-4 dark:border-neutral-800">
-                <p className="mb-3 text-xs font-medium uppercase tracking-wide text-neutral-400">Preview</p>
+              <div className="mt-4 rounded-xl border border-border p-4">
+                <p className="mb-3 text-xs font-medium uppercase tracking-wide text-muted-foreground">Preview</p>
                 <div className="flex items-end gap-2">
                   <div
                     className="rounded-full p-3 shadow-lg"
@@ -280,7 +280,7 @@ export function BotWizard() {
                       <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                     </svg>
                   </div>
-                  <div className="max-w-xs rounded-2xl rounded-bl-none bg-neutral-100 px-4 py-2 text-sm dark:bg-neutral-800">
+                  <div className="max-w-xs rounded-2xl rounded-bl-none bg-muted px-4 py-2 text-sm">
                     {form.welcomeMessage}
                   </div>
                 </div>

@@ -13,7 +13,7 @@ export default async function DashboardLayout({
   if (!session) redirect("/login");
 
   return (
-    <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950">
+    <div className="min-h-screen bg-muted/30">
       <DashboardSidebar />
       <div className="ml-60 pt-16">{children}</div>
     </div>

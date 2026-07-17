@@ -29,7 +29,7 @@ export default function SettingsPage() {
                 />
                 <Button variant="outline">Update</Button>
               </div>
-              <p className="text-xs text-neutral-400">
+              <p className="text-xs text-muted-foreground">
                 Used for all AI responses. Set via ANTHROPIC_API_KEY environment variable.
               </p>
             </div>
@@ -48,7 +48,7 @@ export default function SettingsPage() {
                 />
                 <Button variant="outline">Update</Button>
               </div>
-              <p className="text-xs text-neutral-400">
+              <p className="text-xs text-muted-foreground">
                 Used for billing. Set via STRIPE_SECRET_KEY environment variable.
               </p>
             </div>
@@ -68,7 +68,7 @@ export default function SettingsPage() {
             <div className="space-y-2">
               <Label>Welcome Email Body</Label>
               <textarea
-                className="w-full rounded-md border border-neutral-200 bg-transparent px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:border-neutral-800 dark:text-neutral-100"
+                className="w-full rounded-md border border-border bg-transparent px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
                 rows={5}
                 defaultValue={`Hi {{name}},
 
@@ -76,7 +76,7 @@ Welcome to BotFlow! Your account is ready. Log in to create your first chatbot.
 
 Team BotFlow`}
               />
-              <p className="text-xs text-neutral-400">
+              <p className="text-xs text-muted-foreground">
                 Use {"{{name}}"}, {"{{email}}"}, {"{{company}}"} as placeholders.
               </p>
             </div>

@@ -85,7 +85,11 @@ export function TenantStatusToggle({ tenantId, currentStatus }: { tenantId: stri
       variant={currentStatus === "ACTIVE" ? "outline" : "default"}
       onClick={toggle}
       disabled={loading}
-      className={currentStatus === "ACTIVE" ? "text-yellow-600 border-yellow-300 hover:bg-yellow-50" : ""}
+      className={
+        currentStatus === "ACTIVE"
+          ? "text-amber-600 dark:text-amber-400 border-amber-300 dark:border-amber-800 hover:bg-amber-500/10"
+          : ""
+      }
     >
       {loading ? "Updating…" : currentStatus === "ACTIVE" ? "Suspend" : "Reactivate"}
     </Button>

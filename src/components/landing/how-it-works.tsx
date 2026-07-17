@@ -26,13 +26,13 @@ const STEPS = [
 
 export function HowItWorks() {
   return (
-    <section id="how-it-works" className="bg-white py-24 dark:bg-neutral-950">
+    <section id="how-it-works" className="bg-background py-24">
       <div className="mx-auto max-w-6xl px-6">
         <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-3xl font-bold tracking-tight text-neutral-900 sm:text-4xl dark:text-white">
+          <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
             How it works
           </h2>
-          <p className="mt-4 text-lg text-neutral-600 dark:text-neutral-400">
+          <p className="mt-4 text-lg text-muted-foreground">
             From signup to live chatbot in under five minutes.
           </p>
         </div>
@@ -40,14 +40,14 @@ export function HowItWorks() {
         <div className="relative mt-16 grid gap-10 md:grid-cols-3 md:gap-8">
           {STEPS.map(({ number, icon: Icon, title, description }) => (
             <div key={number} className="relative flex flex-col items-center text-center">
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-600 text-white shadow-lg shadow-indigo-600/20">
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-brand text-white shadow-lg shadow-primary/25">
                 <Icon className="h-6 w-6" />
               </div>
-              <span className="mt-4 text-xs font-semibold tracking-widest text-indigo-600">
+              <span className="mt-4 text-xs font-semibold tracking-widest text-primary">
                 STEP {number}
               </span>
-              <h3 className="mt-2 text-lg font-semibold text-neutral-900 dark:text-white">{title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
+              <h3 className="mt-2 text-lg font-semibold text-foreground">{title}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
                 {description}
               </p>
             </div>

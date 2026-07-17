@@ -53,7 +53,7 @@ export function ManageBillingLink() {
   }
 
   return (
-    <button className="text-indigo-600 underline disabled:opacity-50" onClick={handleClick} disabled={loading}>
+    <button className="text-primary underline disabled:opacity-50" onClick={handleClick} disabled={loading}>
       {loading ? "Redirecting…" : "Stripe portal"}
     </button>
   );

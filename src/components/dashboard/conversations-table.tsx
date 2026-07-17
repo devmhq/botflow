@@ -68,9 +68,9 @@ export function ConversationsTable({ conversations }: { conversations: Conversat
   return (
     <div className="flex gap-6 h-[calc(100vh-8rem)]">
       {/* Main table */}
-      <div className="flex flex-1 flex-col overflow-hidden rounded-lg border border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900">
+      <div className="flex flex-1 flex-col overflow-hidden rounded-lg border border-border bg-card">
         {/* Filters */}
-        <div className="flex items-center gap-1 border-b border-neutral-200 p-3 dark:border-neutral-800">
+        <div className="flex items-center gap-1 border-b border-border p-3">
           {FILTERS.map((f) => (
             <button
               key={f}
@@ -78,14 +78,14 @@ export function ConversationsTable({ conversations }: { conversations: Conversat
               className={cn(
                 "rounded-md px-3 py-1.5 text-xs font-medium transition-colors",
                 filter === f
-                  ? "bg-indigo-50 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-400"
-                  : "text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                  ? "bg-primary/10 text-primary"
+                  : "text-muted-foreground hover:bg-accent"
               )}
             >
               {f}
             </button>
           ))}
-          <span className="ml-auto text-xs text-neutral-400">{filtered.length} conversations</span>
+          <span className="ml-auto text-xs text-muted-foreground">{filtered.length} conversations</span>
         </div>
 
         <div className="flex-1 overflow-y-auto">
@@ -102,7 +102,7 @@ export function ConversationsTable({ conversations }: { conversations: Conversat
             <TableBody>
               {filtered.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={5} className="py-12 text-center text-sm text-neutral-400">
+                  <TableCell colSpan={5} className="py-12 text-center text-sm text-muted-foreground">
                     No conversations found.
                   </TableCell>
                 </TableRow>
@@ -115,24 +115,24 @@ export function ConversationsTable({ conversations }: { conversations: Conversat
                 >
                   <TableCell>
                     <p className="font-medium text-sm">{convo.visitorName ?? "Anonymous"}</p>
-                    <p className="text-xs text-neutral-400">{convo.visitorEmail ?? convo.visitorId.slice(0, 8)}</p>
+                    <p className="text-xs text-muted-foreground">{convo.visitorEmail ?? convo.visitorId.slice(0, 8)}</p>
                   </TableCell>
                   <TableCell className="text-sm">{convo.chatbot.name}</TableCell>
                   <TableCell>
                     {convo.status === "OPEN" ? (
-                      <span className="inline-flex items-center gap-1 rounded-full bg-yellow-50 px-2 py-0.5 text-xs font-medium text-yellow-700">
+                      <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/10 px-2 py-0.5 text-xs font-medium text-amber-600 dark:text-amber-400">
                         <Clock className="h-3 w-3" /> Open
                       </span>
                     ) : (
-                      <span className="inline-flex items-center gap-1 rounded-full bg-green-50 px-2 py-0.5 text-xs font-medium text-green-700">
+                      <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-xs font-medium text-emerald-600 dark:text-emerald-400">
                         <CheckCircle2 className="h-3 w-3" /> Resolved
                       </span>
                     )}
                   </TableCell>
-                  <TableCell className="max-w-xs text-xs text-neutral-500 truncate">
+                  <TableCell className="max-w-xs text-xs text-muted-foreground truncate">
                     {convo.messages[0]?.content ?? "—"}
                   </TableCell>
-                  <TableCell className="text-xs text-neutral-400">
+                  <TableCell className="text-xs text-muted-foreground">
                     {new Date(convo.updatedAt).toLocaleDateString()}
                   </TableCell>
                 </TableRow>
@@ -144,20 +144,20 @@ export function ConversationsTable({ conversations }: { conversations: Conversat
 
       {/* Slide-over panel */}
       {selected && (
-        <div className="w-80 flex-shrink-0 overflow-hidden rounded-lg border border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900 flex flex-col">
-          <div className="flex items-center justify-between border-b border-neutral-200 p-4 dark:border-neutral-800">
+        <div className="w-80 flex-shrink-0 overflow-hidden rounded-lg border border-border bg-card flex flex-col">
+          <div className="flex items-center justify-between border-b border-border p-4">
             <div>
               <p className="font-semibold text-sm">{selected.visitorName ?? "Anonymous"}</p>
-              <p className="text-xs text-neutral-400">{selected.visitorEmail ?? selected.visitorId.slice(0, 8)}</p>
+              <p className="text-xs text-muted-foreground">{selected.visitorEmail ?? selected.visitorId.slice(0, 8)}</p>
             </div>
             <button onClick={() => setSelected(null)}>
-              <X className="h-4 w-4 text-neutral-400 hover:text-neutral-700" />
+              <X className="h-4 w-4 text-muted-foreground hover:text-foreground" />
             </button>
           </div>
 
           <div className="flex-1 overflow-y-auto p-4">
             {selected.messages.length === 0 ? (
-              <div className="flex flex-col items-center justify-center h-full text-neutral-400">
+              <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
                 <MessageSquare className="h-8 w-8 mb-2" />
                 <p className="text-sm">No messages</p>
               </div>
@@ -169,8 +169,8 @@ export function ConversationsTable({ conversations }: { conversations: Conversat
                     className={cn(
                       "rounded-2xl px-3 py-2 text-sm max-w-[85%]",
                       msg.role === "USER"
-                        ? "ml-auto bg-indigo-500 text-white rounded-br-none"
-                        : "bg-neutral-100 text-neutral-800 rounded-bl-none dark:bg-neutral-800 dark:text-neutral-200"
+                        ? "ml-auto bg-primary text-primary-foreground rounded-br-none"
+                        : "bg-muted text-foreground rounded-bl-none"
                     )}
                   >
                     {msg.content}
@@ -181,7 +181,7 @@ export function ConversationsTable({ conversations }: { conversations: Conversat
           </div>
 
           {selected.status === "OPEN" && (
-            <div className="border-t border-neutral-200 p-4 dark:border-neutral-800">
+            <div className="border-t border-border p-4">
               <Button
                 className="w-full"
                 size="sm"

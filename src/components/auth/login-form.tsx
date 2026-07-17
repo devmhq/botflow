@@ -58,7 +58,7 @@ export function LoginForm() {
           aria-invalid={!!errors.email}
           {...register("email")}
         />
-        {errors.email && <p className="text-xs text-red-600 dark:text-red-400">{errors.email.message}</p>}
+        {errors.email && <p className="text-xs text-destructive">{errors.email.message}</p>}
       </div>
 
       <div className="space-y-2">
@@ -71,10 +71,10 @@ export function LoginForm() {
           aria-invalid={!!errors.password}
           {...register("password")}
         />
-        {errors.password && <p className="text-xs text-red-600 dark:text-red-400">{errors.password.message}</p>}
+        {errors.password && <p className="text-xs text-destructive">{errors.password.message}</p>}
       </div>
 
-      <Button type="submit" disabled={loading} className="w-full bg-indigo-600 text-white hover:bg-indigo-700">
+      <Button type="submit" variant="gradient" disabled={loading} className="w-full">
         {loading ? "Logging in…" : "Log in"}
       </Button>
     </form>

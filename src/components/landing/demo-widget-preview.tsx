@@ -79,20 +79,20 @@ export function DemoWidgetPreview() {
   }, []);
 
   return (
-    <div className="mx-auto w-full max-w-sm overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-2xl dark:border-neutral-800 dark:bg-neutral-900">
-      <div className="flex items-center gap-3 bg-indigo-600 px-4 py-3.5">
+    <div className="mx-auto w-full max-w-sm overflow-hidden rounded-2xl border border-border bg-card shadow-2xl shadow-primary/10">
+      <div className="flex items-center gap-3 bg-gradient-brand px-4 py-3.5">
         <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20">
           <MessageCircle className="h-4 w-4 text-white" />
         </div>
         <div>
           <p className="text-sm font-semibold text-white">Aurora Salon Assistant</p>
-          <p className="flex items-center gap-1 text-xs text-indigo-100">
-            <span className="h-1.5 w-1.5 rounded-full bg-green-400" /> Online
+          <p className="flex items-center gap-1 text-xs text-white/80">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" /> Online
           </p>
         </div>
       </div>
 
-      <div className="flex h-80 flex-col gap-2 overflow-hidden bg-neutral-50 p-4 dark:bg-neutral-950">
+      <div className="flex h-80 flex-col gap-2 overflow-hidden bg-muted/40 p-4">
         {visible.map((line, i) => (
           <div
             key={i}
@@ -110,8 +110,8 @@ export function DemoWidgetPreview() {
         )}
       </div>
 
-      <div className="border-t border-neutral-200 bg-white p-3 dark:border-neutral-800 dark:bg-neutral-900">
-        <div className="flex items-center gap-2 rounded-full border border-neutral-200 px-3.5 py-2 text-sm text-neutral-400 dark:border-neutral-700">
+      <div className="border-t border-border bg-card p-3">
+        <div className="flex items-center gap-2 rounded-full border border-border px-3.5 py-2 text-sm text-muted-foreground">
           Type a message…
         </div>
       </div>
@@ -122,6 +122,6 @@ export function DemoWidgetPreview() {
 function cnBubble(role: ScriptLine["role"]) {
   const base = "max-w-[80%] rounded-2xl px-3.5 py-2 text-sm leading-relaxed";
   return role === "user"
-    ? `${base} self-end rounded-br-sm bg-indigo-600 text-white`
-    : `${base} self-start rounded-bl-sm bg-neutral-200 text-neutral-800 dark:bg-neutral-800 dark:text-neutral-100`;
+    ? `${base} self-end rounded-br-sm bg-gradient-brand text-white`
+    : `${base} self-start rounded-bl-sm bg-secondary text-secondary-foreground`;
 }

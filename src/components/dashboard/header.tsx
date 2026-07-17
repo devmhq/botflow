@@ -24,8 +24,8 @@ export function DashboardHeader({ title, userName }: DashboardHeaderProps) {
     : "U";
 
   return (
-    <header className="fixed left-60 right-0 top-0 z-40 flex h-16 items-center justify-between border-b border-neutral-200 bg-white px-6 dark:border-neutral-800 dark:bg-neutral-900">
-      <h1 className="text-xl font-semibold text-neutral-900 dark:text-white">{title}</h1>
+    <header className="fixed left-60 right-0 top-0 z-40 flex h-16 items-center justify-between border-b border-border bg-background px-6">
+      <h1 className="text-xl font-semibold text-foreground">{title}</h1>
 
       <div className="flex items-center gap-2">
         <ThemeToggle />
@@ -35,13 +35,13 @@ export function DashboardHeader({ title, userName }: DashboardHeaderProps) {
         </Button>
 
         <DropdownMenu>
-          <DropdownMenuTrigger className="flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm font-medium transition-colors hover:bg-neutral-100 outline-none dark:hover:bg-neutral-800">
+          <DropdownMenuTrigger className="flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm font-medium outline-none transition-colors hover:bg-accent">
             <Avatar className="h-7 w-7">
-              <AvatarFallback className="bg-indigo-100 text-xs text-indigo-700">
+              <AvatarFallback className="bg-primary/10 text-xs text-primary">
                 {initials}
               </AvatarFallback>
             </Avatar>
-            <span className="text-neutral-700 dark:text-neutral-200">{userName ?? "Account"}</span>
+            <span className="text-foreground/80">{userName ?? "Account"}</span>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem onClick={() => window.location.href = "/dashboard/settings"}>
@@ -50,7 +50,7 @@ export function DashboardHeader({ title, userName }: DashboardHeaderProps) {
             <DropdownMenuSeparator />
             <DropdownMenuItem
               onClick={() => signOut({ callbackUrl: "/login" })}
-              className="text-red-600"
+              className="text-destructive"
             >
               <LogOut className="mr-2 h-4 w-4" />
               Sign out
